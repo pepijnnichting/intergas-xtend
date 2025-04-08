@@ -2,11 +2,11 @@
   "domain": "intergas_xtend",
   "name": "Intergas Xtend",
   "config_flow": true,
-  "documentation": "https://github.com/YourUsername/intergas-xtend",
-  "issue_tracker": "https://github.com/YourUsername/intergas-xtend/issues",
+  "documentation": "https://github.com/pepijnnichting/intergas_xtend",
+  "issue_tracker": "https://github.com/pepijnnichting/intergas_xtend/issues",
   "requirements": ["aiohttp>=3.8.0"],
   "dependencies": [],
-  "codeowners": ["@YourUsername"],
-  "iot_class": "cloud_polling",
+  "codeowners": ["@pepijnnichting"],
+  "iot_class": "local_polling",
   "version": "0.1.0"
 }

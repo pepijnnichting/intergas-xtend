@@ -3,20 +3,20 @@
     "step": {
       "user": {
         "title": "Connect to Intergas Xtend",
-        "description": "Please enter your Intergas Xtend credentials",
+        "description": "Please enter the IP address of your Intergas Xtend device",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "host": "IP Address",
+          "port": "Port (usually 80)"
         }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect, please try again",
-      "invalid_auth": "Invalid authentication",
+      "cannot_connect": "Failed to connect to the device, please check the IP address",
+      "invalid_host": "Invalid IP address",
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "This account is already configured"
+      "already_configured": "This device is already configured"
     }
   }
 }

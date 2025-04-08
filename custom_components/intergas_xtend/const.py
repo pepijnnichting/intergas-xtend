@@ -3,13 +3,35 @@
 DOMAIN = "intergas_xtend"
 MANUFACTURER = "Intergas"
 
-# API endpoints
-BASE_URL = "https://portal.intergas-verwarming.nl"
-LOGIN_URL = f"{BASE_URL}/oauth/token"
-DATA_URL = f"{BASE_URL}/api/appliances"
+# Default values
+DEFAULT_HOST = "192.168.178.120"  # Default IP address of the Intergas Xtend
+DEFAULT_PORT = 80
+DEFAULT_TIMEOUT = 10  # Timeout in seconds
+DEFAULT_SCAN_INTERVAL = 60  # Update interval in seconds
 
-# Data update interval in seconds (5 minutes)
-UPDATE_INTERVAL = 300
+# Config flow
+CONF_HOST = "host"
+CONF_PORT = "port"
+
+# Data keys
+KEY_STATUS = "status"
+KEY_STATUS_CODE = "statusCode"
+KEY_ROOMTEMP = "roomTemp"
+KEY_OUTSIDE_TEMP = "outsideTemp"
+KEY_PRESSURE = "pressure"
+KEY_TAPWATERTEMP = "tapwaterTemp"
+KEY_HEATING_TEMP = "heatingTemp"
+KEY_SETPOINT = "setpoint"
+KEY_MANUAL_SETPOINT = "manualSetpoint"
+KEY_FLAME = "flame"
+KEY_PUMP = "pump"
+KEY_HEATING = "heating"
+KEY_TAPWATER = "tapwater"
+KEY_MODULATION = "modulation"
+KEY_INTERNAL_SETPOINT = "internalSetpoint"
+KEY_HEATING_ENABLED = "heatingEnabled"
+KEY_TAPWATER_ENABLED = "tapwaterEnabled"
+KEY_COOLING_ENABLED = "coolingEnabled"
 
 # Sensors
 SENSOR_TYPES = {
