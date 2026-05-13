@@ -3,20 +3,24 @@
     "step": {
       "user": {
         "title": "Connect to Intergas Xtend",
-        "description": "Please enter the IP address of your Intergas Xtend device",
+        "description": "## Before you continue\n\nThe Xtend must be reachable over Wi-Fi from this Home Assistant device.\n\n> **Important:** Because the Wi-Fi adapter will be dedicated to the Xtend network, your Home Assistant server must be connected to your home network and internet via **Ethernet**. Without a wired connection, Home Assistant will lose internet access while the Wi-Fi is connected to the Xtend.\n\n**Step 1 — Activate the Xtend access point**\nPress the button on the Xtend unit until the LED blinks purple.\n\n**Step 2 — Connect Home Assistant to the Xtend Wi-Fi**\nGo to [Settings → System → Network](/config/network), click on your Wi-Fi adapter, scan for access points and select **Xtend_xxxxxxxxxx** (WPA-PSK). The password is printed on the Xtend unit.\n\n**Step 3 — Enter the IP address below**\nThe Xtend always uses **10.20.30.1** on its own network. Leave the default unless you have changed it.",
         "data": {
           "host": "IP Address",
-          "port": "Port (usually 80)"
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "IP address of the Xtend unit (default: 10.20.30.1)",
+          "port": "HTTP port of the Xtend unit (default: 80)"
         }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect to the device, please check the IP address",
+      "cannot_connect": "Cannot reach the Xtend. Make sure Home Assistant is connected to the Xtend Wi-Fi network and the IP address is correct.",
       "invalid_host": "Invalid IP address",
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "This device is already configured"
+      "already_configured": "This Xtend device is already configured"
     }
   }
 }
