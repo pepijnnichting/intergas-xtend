@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.data_entry_flow import FlowResult
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, DEFAULT_HOST, DEFAULT_PORT, CONF_HOST, CONF_PORT
 from .intergas_api import IntergasXtendApi, ConnectionFailedError
@@ -36,14 +37,12 @@ async def validate_input(hass: HomeAssistant, data: Dict[str, Any]) -> Dict[str,
     if not is_valid_ip(data[CONF_HOST]):
         raise InvalidHost
     
-    api = IntergasXtendApi(data[CONF_HOST], data[CONF_PORT])
+    api = IntergasXtendApi(data[CONF_HOST], data[CONF_PORT], session=async_get_clientsession(hass))
     
     try:
         await api.login()
     except ConnectionFailedError:
         raise CannotConnect
-    finally:
-        await api.close()
     
     # Return info to be stored in the config entry
     return {"title": f"Intergas Xtend ({data[CONF_HOST]})"}
@@ -59,6 +58,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         
         if user_input is not None:
             try:
+                await self.async_set_unique_id(user_input[CONF_HOST])
+                self._abort_if_unique_id_configured()
                 info = await validate_input(self.hass, user_input)
                 return self.async_create_entry(title=info["title"], data=user_input)
             except CannotConnect:

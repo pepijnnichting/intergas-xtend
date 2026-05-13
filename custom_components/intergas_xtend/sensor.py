@@ -12,27 +12,44 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
-    TEMP_CELSIUS,
-    PRESSURE_BAR,
+    UnitOfTemperature,
+    UnitOfPressure,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     DOMAIN,
-    KEY_HEATING_TEMP,
-    KEY_MODULATION,
-    KEY_OUTSIDE_TEMP,
-    KEY_PRESSURE,
-    KEY_ROOMTEMP,
-    KEY_SETPOINT,
-    KEY_STATUS,
-    KEY_TAPWATERTEMP,
+    FIELD_ROOM_TEMP,
+    FIELD_OUTDOOR_TEMP,
+    FIELD_HP_SUPPLY_TEMP,
+    FIELD_TAPWATER_TEMP,
+    FIELD_PRESSURE,
+    FIELD_SETPOINT,
+    FIELD_MODULATION,
+    FIELD_SYSTEM_STATUS,
+    XTEND_UNAVAILABLE,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _temp(data: Dict, key: str) -> Optional[float]:
+    """Return a temperature in °C (scale ×0.01), or None if unavailable."""
+    raw = data.get(key)
+    if raw is None or raw == XTEND_UNAVAILABLE:
+        return None
+    return round(raw * 0.01, 2)
+
+
+def _scaled(data: Dict, key: str, factor: float) -> Optional[float]:
+    """Return a value scaled by factor, or None if unavailable."""
+    raw = data.get(key)
+    if raw is None or raw == XTEND_UNAVAILABLE:
+        return None
+    return round(raw * factor, 2)
+
 
 @dataclass
 class IntergasXtendSensorEntityDescription(SensorEntityDescription):
@@ -43,66 +60,66 @@ class IntergasXtendSensorEntityDescription(SensorEntityDescription):
 
 SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     IntergasXtendSensorEntityDescription(
-        key=KEY_ROOMTEMP,
+        key=FIELD_ROOM_TEMP,
         name="Room Temperature",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_ROOMTEMP),
+        value_fn=lambda data: _temp(data, FIELD_ROOM_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_HEATING_TEMP,
+        key=FIELD_HP_SUPPLY_TEMP,
         name="Heating Temperature",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_HEATING_TEMP),
+        value_fn=lambda data: _temp(data, FIELD_HP_SUPPLY_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_OUTSIDE_TEMP,
+        key=FIELD_OUTDOOR_TEMP,
         name="Outside Temperature",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_OUTSIDE_TEMP),
+        value_fn=lambda data: _temp(data, FIELD_OUTDOOR_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_TAPWATERTEMP,
+        key=FIELD_TAPWATER_TEMP,
         name="Tap Water Temperature",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_TAPWATERTEMP),
+        value_fn=lambda data: _temp(data, FIELD_TAPWATER_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_PRESSURE,
+        key=FIELD_PRESSURE,
         name="Water Pressure",
-        native_unit_of_measurement=PRESSURE_BAR,
+        native_unit_of_measurement=UnitOfPressure.BAR,
         device_class=SensorDeviceClass.PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_PRESSURE),
+        value_fn=lambda data: _scaled(data, FIELD_PRESSURE, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_SETPOINT,
+        key=FIELD_SETPOINT,
         name="Temperature Setpoint",
-        native_unit_of_measurement=TEMP_CELSIUS,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get(KEY_SETPOINT),
+        value_fn=lambda data: _temp(data, FIELD_SETPOINT),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_MODULATION,
+        key=FIELD_MODULATION,
         name="Modulation",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:percent",
-        value_fn=lambda data: data.get(KEY_MODULATION),
+        value_fn=lambda data: _scaled(data, FIELD_MODULATION, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
-        key=KEY_STATUS,
+        key=FIELD_SYSTEM_STATUS,
         name="Status",
         icon="mdi:information",
-        value_fn=lambda data: data.get(KEY_STATUS),
+        value_fn=lambda data: data.get(FIELD_SYSTEM_STATUS),
     ),
 )
 
@@ -113,13 +130,11 @@ async def async_setup_entry(
     """Set up the Intergas Xtend sensors."""
     data = hass.data[DOMAIN][entry.entry_id]
     coordinator = data["coordinator"]
-    
-    sensors = []
-    
-    for description in SENSOR_DESCRIPTIONS:
-        sensors.append(IntergasXtendSensor(coordinator, entry.entry_id, description))
-    
-    async_add_entities(sensors)
+
+    async_add_entities(
+        IntergasXtendSensor(coordinator, entry.entry_id, description)
+        for description in SENSOR_DESCRIPTIONS
+    )
 
 
 class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
@@ -134,7 +149,7 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{entry_id}_{description.key}"
         self._entry_id = entry_id
         self._attr_has_entity_name = True
-        
+
     @property
     def device_info(self):
         """Return device information."""
@@ -144,15 +159,14 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
             "manufacturer": "Intergas",
             "model": "Xtend",
         }
-        
+
     @property
     def native_value(self):
         """Return the sensor value."""
         if not self.coordinator.data:
             return None
-            
         value_fn = self.entity_description.value_fn
         if value_fn is not None:
             return value_fn(self.coordinator.data)
-            
         return None
+

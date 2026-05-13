@@ -6,6 +6,7 @@ from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.const import Platform
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, CONF_HOST, CONF_PORT
@@ -21,7 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     api = IntergasXtendApi(
         entry.data[CONF_HOST],
-        entry.data.get(CONF_PORT, 80)
+        entry.data.get(CONF_PORT, 80),
+        session=async_get_clientsession(hass),
     )
     
     # Create update coordinator
