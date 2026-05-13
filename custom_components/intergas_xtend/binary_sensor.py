@@ -27,7 +27,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(frozen=True)
 class IntergasXtendBinarySensorEntityDescription(BinarySensorEntityDescription):
     """Class describing Intergas Xtend binary sensor entities."""
 
