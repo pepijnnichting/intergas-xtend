@@ -15,6 +15,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     DOMAIN,
+    MANUFACTURER,
     FIELD_SYSTEM_STATUS,
     FIELD_ROOM_TEMP,
     FIELD_SETPOINT,
@@ -54,7 +55,7 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         return {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": "Intergas Xtend",
-            "manufacturer": "Intergas",
+            "manufacturer": MANUFACTURER,
             "model": "Xtend",
         }
 

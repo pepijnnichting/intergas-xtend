@@ -26,6 +26,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     DOMAIN,
+    MANUFACTURER,
     XTEND_UNAVAILABLE,
     FIELD_ROOM_TEMP,
     FIELD_OUTDOOR_TEMP,
@@ -506,12 +507,7 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
         return {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": "Intergas Xtend",
-            "manufacturer": "Intergas",
-            "model": "Xtend",
-        }
-
-    @property
-    def native_value(self):
+            "manufacturer": MANUFACTURER,(self):
         """Return the sensor value."""
         if not self.coordinator.data:
             return None

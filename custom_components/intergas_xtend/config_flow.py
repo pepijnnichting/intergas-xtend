@@ -9,7 +9,6 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.data_entry_flow import FlowResult
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
