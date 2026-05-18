@@ -1,4 +1,22 @@
-# Intergas Xtend Integration for Home Assistant
+<p align="center">
+  <img src="custom_components/intergas_xtend/icon.png" alt="Intergas Xtend" width="160" />
+</p>
+
+<h1 align="center">Intergas Xtend — Home Assistant Integration</h1>
+
+<p align="center">
+  Local Wi-Fi integration for the Intergas Xtend hybrid heat pump.<br>
+  No cloud. No subscription. Full control from Home Assistant.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/HACS-Custom-orange?logo=home-assistant-community-store" alt="HACS Custom" />
+  <img src="https://img.shields.io/badge/HA-2025.1%2B-blue?logo=home-assistant" alt="Home Assistant 2025.1+" />
+  <img src="https://img.shields.io/github/v/release/pepijnnichting/intergas-xtend" alt="GitHub release" />
+  <img src="https://img.shields.io/github/license/pepijnnichting/intergas-xtend" alt="License" />
+</p>
+
+---
 
 This integration connects directly to your Intergas Xtend hybrid heat pump over Wi-Fi, allowing you to monitor your heating system from Home Assistant.
 
@@ -42,8 +60,8 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
 ### HACS (recommended)
 
 1. Ensure you have [HACS](https://hacs.xyz/) installed
-2. Go to HACS > Integrations
-3. Add this repository as a custom repository
+2. Go to **HACS → three-dot menu → Custom repositories**
+3. Add `https://github.com/pepijnnichting/intergas-xtend` as an **Integration**
 4. Search for "Intergas Xtend" and install it
 5. Restart Home Assistant
 
