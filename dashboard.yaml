@@ -128,6 +128,35 @@ views:
             name: Thermal — Cooling
             icon: mdi:snowflake
 
+      # Shown as unavailable when Xtore hot water tank is not connected
+      - title: Xtore Hot Water Tank
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_temperature
+            name: Tank Top (Hot)
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_preheat_temperature
+            name: Preheat
+            icon: mdi:water-thermometer
+          - type: tile
+            entity: sensor.intergas_xtend_cold_water_temperature
+            name: Cold Inlet
+            icon: mdi:water-thermometer-outline
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_thermal_power
+            name: Thermal Power
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_flow_rate
+            name: Flow Rate
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_pump_speed
+            name: Pump Speed
+            icon: mdi:pump
+          - type: tile
+            entity: binary_sensor.intergas_xtend_tap_water
+            name: Heating Active
+            color: blue
+
   # ── History ───────────────────────────────────────────────────────────────
   - title: History
     path: intergas-xtend-history
@@ -170,6 +199,17 @@ views:
           - entity: sensor.intergas_xtend_boiler_modulation
             name: Modulation (%)
 
+      - type: history-graph
+        title: Xtore Hot Water Tank (24 h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.intergas_xtend_hot_water_temperature
+            name: Tank Top
+          - entity: sensor.intergas_xtend_hot_water_preheat_temperature
+            name: Preheat
+          - entity: sensor.intergas_xtend_cold_water_temperature
+            name: Cold Inlet
+
       - type: statistics-graph
         title: Energy per day (30 days)
         period: day
@@ -188,3 +228,5 @@ views:
             name: Thermal — Hot Water
           - entity: sensor.intergas_xtend_thermal_energy_cooling
             name: Thermal — Cooling
+          - entity: sensor.intergas_xtend_electric_energy_hot_water
+            name: Electric — Hot Water
