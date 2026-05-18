@@ -1,19 +1,18 @@
 """Climate platform for Intergas Xtend integration."""
 import logging
-from typing import Optional
 
 from homeassistant.components.climate import (
     ClimateEntity,
     HVACAction,
     HVACMode,
 )
-from homeassistant.config_entries import ConfigEntry
-from . import IntergasXtendConfigEntry
 from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import IntergasXtendConfigEntry
 
 from .const import (
     DOMAIN,
@@ -41,7 +40,6 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
     """Representation of an Intergas Xtend thermostat (read-only)."""
 
     _attr_hvac_modes = [HVACMode.HEAT, HVACMode.COOL]
-    _attr_supported_features = 0
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
 
     def __init__(self, coordinator, entry_id):
@@ -62,7 +60,7 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         )
 
     @property
-    def current_temperature(self) -> Optional[float]:
+    def current_temperature(self) -> float | None:
         """Return the current temperature."""
         if not self.coordinator.data:
             return None
@@ -72,7 +70,7 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         return round(raw * 0.01, 2)
 
     @property
-    def target_temperature(self) -> Optional[float]:
+    def target_temperature(self) -> float | None:
         """Return the active setpoint (read-only)."""
         if not self.coordinator.data:
             return None
@@ -91,7 +89,7 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         return HVACMode.HEAT
 
     @property
-    def hvac_action(self) -> Optional[HVACAction]:
+    def hvac_action(self) -> HVACAction | None:
         """Return what the system is actively doing right now."""
         if not self.coordinator.data:
             return None

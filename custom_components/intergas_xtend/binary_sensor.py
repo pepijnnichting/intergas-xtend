@@ -1,19 +1,19 @@
 """Binary sensor platform for Intergas Xtend integration."""
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Dict, Optional
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
-from . import IntergasXtendConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import IntergasXtendConfigEntry
 
 from .const import (
     DOMAIN,
@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class IntergasXtendBinarySensorEntityDescription(BinarySensorEntityDescription):
     """Class describing Intergas Xtend binary sensor entities."""
 
-    is_on_fn: Optional[Callable[[Dict], bool]] = None
+    is_on_fn: Callable[[dict], bool] | None = None
 
 
 BINARY_SENSOR_DESCRIPTIONS: tuple[IntergasXtendBinarySensorEntityDescription, ...] = (

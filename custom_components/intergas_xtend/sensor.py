@@ -1,7 +1,7 @@
 """Sensor platform for Intergas Xtend integration."""
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -9,8 +9,6 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
-from . import IntergasXtendConfigEntry
 from homeassistant.const import (
     EntityCategory,
     PERCENTAGE,
@@ -25,6 +23,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import IntergasXtendConfigEntry
 
 from .const import (
     DOMAIN,
@@ -138,7 +138,7 @@ _NOTIFICATION_CODES: dict[int, str] = {
 # Value helper functions
 # ---------------------------------------------------------------------------
 
-def _temp(data: dict, key: str) -> Optional[float]:
+def _temp(data: dict, key: str) -> float | None:
     """Temperature in °C (int16 ×0.01); None when unavailable (32767)."""
     raw = data.get(key)
     if raw is None or raw == XTEND_UNAVAILABLE:
@@ -146,7 +146,7 @@ def _temp(data: dict, key: str) -> Optional[float]:
     return round(raw * 0.01, 2)
 
 
-def _int16(data: dict, key: str, factor: float) -> Optional[float]:
+def _int16(data: dict, key: str, factor: float) -> float | None:
     """Scaled int16 value; None when unavailable (32767)."""
     raw = data.get(key)
     if raw is None or raw == XTEND_UNAVAILABLE:
@@ -154,7 +154,7 @@ def _int16(data: dict, key: str, factor: float) -> Optional[float]:
     return round(raw * factor, 2)
 
 
-def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
+def _decode(data: dict, key: str, mapping: dict) -> str | None:
     """Decode an integer enum field to a human-readable string."""
     raw = data.get(key)
     if raw is None:
@@ -162,7 +162,7 @@ def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
     return mapping.get(raw, f"Unknown ({raw})")
 
 
-def _decode_enum(data: dict, key: str, mapping: dict) -> Optional[str]:
+def _decode_enum(data: dict, key: str, mapping: dict) -> str | None:
     """Decode an integer enum field to a translation-key slug; None for unknown values."""
     raw = data.get(key)
     if raw is None:
@@ -170,7 +170,7 @@ def _decode_enum(data: dict, key: str, mapping: dict) -> Optional[str]:
     return mapping.get(raw)
 
 
-def _delta_t(data: dict) -> Optional[float]:
+def _delta_t(data: dict) -> float | None:
     """Supply minus return temperature in °C; None when either is unavailable."""
     supply = _temp(data, FIELD_HP_SUPPLY_TEMP)
     ret = _temp(data, FIELD_HP_RETURN_TEMP)
