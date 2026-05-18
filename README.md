@@ -10,6 +10,12 @@
 </p>
 
 <p align="center">
+  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=pepijnnichting&repository=intergas-xtend&category=integration">
+    <img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open in HACS" />
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/HACS-Custom-orange?logo=home-assistant-community-store" alt="HACS Custom" />
   <img src="https://img.shields.io/badge/HA-2026.5%2B-blue?logo=home-assistant" alt="Home Assistant 2026.5+" />
   <img src="https://img.shields.io/github/v/release/pepijnnichting/intergas-xtend" alt="GitHub release" />
