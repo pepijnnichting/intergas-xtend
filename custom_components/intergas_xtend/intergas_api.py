@@ -23,10 +23,10 @@ class IntergasXtendApi:
         """Initialize the API client."""
         self.host = host
         self.port = port
-        self.data: Dict[str, int] = {}
         self._own_session = session is None
         self.session = session if session is not None else aiohttp.ClientSession()
         self._stats_url = f"http://{host}:{port}/api/stats/values"
+        self._timeout = aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
 
     async def login(self) -> bool:
         """Test connection to the Intergas Xtend."""
@@ -52,19 +52,17 @@ class IntergasXtendApi:
         A raw value of 32767 means "not available" for int16 fields.
         """
         try:
-            timeout = aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
             async with self.session.get(
                 self._stats_url,
                 params={"fields": ALL_FIELDS},
-                timeout=timeout,
+                timeout=self._timeout,
             ) as response:
                 if response.status != 200:
                     raise ConnectionFailedError(
                         f"Failed to get data: HTTP {response.status}"
                     )
-                payload = await response.json()
+                payload = await response.json(content_type=None)
                 stats: Dict[str, int] = payload.get("stats", {})
-                self.data = stats
                 return stats
         except asyncio.TimeoutError:
             raise ConnectionFailedError(
