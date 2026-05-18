@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/HACS-Custom-orange?logo=home-assistant-community-store" alt="HACS Custom" />
-  <img src="https://img.shields.io/badge/HA-2025.1%2B-blue?logo=home-assistant" alt="Home Assistant 2025.1+" />
+  <img src="https://img.shields.io/badge/HA-2026.5%2B-blue?logo=home-assistant" alt="Home Assistant 2026.5+" />
   <img src="https://img.shields.io/github/v/release/pepijnnichting/intergas-xtend" alt="GitHub release" />
   <img src="https://img.shields.io/github/license/pepijnnichting/intergas-xtend" alt="License" />
 </p>
@@ -91,14 +91,14 @@ All sensors use standard Home Assistant device classes, so energy sensors appear
 
 If you have an Intergas Xtore boiler vessel connected to your Xtend, six additional sensors are created automatically:
 
-| Sensor | Description |
-|---|---|
+| Sensor                        | Description                                |
+| ----------------------------- | ------------------------------------------ |
 | Hot Water Preheat Temperature | Heat exchanger temperature inside the tank |
-| Cold Water Temperature | Mains cold water inlet temperature |
-| Hot Water Flow Rate | DHW circuit flow rate (L/min) |
-| Hot Water Pump Speed | DHW pump modulation (%) |
-| Hot Water Thermal Power | Thermal power delivered to the tank (kW) |
-| Electric Energy Hot Water | Cumulative electric energy for DHW (kWh) |
+| Cold Water Temperature        | Mains cold water inlet temperature         |
+| Hot Water Flow Rate           | DHW circuit flow rate (L/min)              |
+| Hot Water Pump Speed          | DHW pump modulation (%)                    |
+| Hot Water Thermal Power       | Thermal power delivered to the tank (kW)   |
+| Electric Energy Hot Water     | Cumulative electric energy for DHW (kWh)   |
 
 When no Xtore is connected, all six sensors show as **unavailable** — they do not affect the rest of the integration.
 
