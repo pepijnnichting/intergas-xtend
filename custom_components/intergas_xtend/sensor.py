@@ -43,6 +43,8 @@ from .const import (
     FIELD_ENERGY_THERMAL_HEATING,
     FIELD_ENERGY_ELECTRIC_HEATING,
     FIELD_ENERGY_THERMAL_BOILER,
+    FIELD_ENERGY_THERMAL_DHW,
+    FIELD_ENERGY_THERMAL_COOLING,
     FIELD_MODULATION,
     FIELD_SYSTEM_STATUS,
     FIELD_HEATPUMP_MODE,
@@ -148,6 +150,15 @@ def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
     return mapping.get(raw, f"Unknown ({raw})")
 
 
+def _delta_t(data: dict) -> Optional[float]:
+    """Supply minus return temperature in °C; None when either is unavailable."""
+    supply = _temp(data, FIELD_HP_SUPPLY_TEMP)
+    ret = _temp(data, FIELD_HP_RETURN_TEMP)
+    if supply is None or ret is None:
+        return None
+    return round(supply - ret, 2)
+
+
 # ---------------------------------------------------------------------------
 # Entity descriptions
 # ---------------------------------------------------------------------------
@@ -217,6 +228,15 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:thermometer-auto",
         value_fn=lambda data: _temp(data, FIELD_REQUESTED_TEMP),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key="delta_t",
+        name="Delta T",
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:thermometer-plus",
+        value_fn=_delta_t,
     ),
     # --- Pressure / Flow ----------------------------------------------------
     IntergasXtendSensorEntityDescription(
@@ -293,6 +313,22 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
         value_fn=lambda data: data.get(FIELD_ENERGY_THERMAL_BOILER),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_ENERGY_THERMAL_DHW,
+        name="Thermal Energy Hot Water",
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda data: data.get(FIELD_ENERGY_THERMAL_DHW),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_ENERGY_THERMAL_COOLING,
+        name="Thermal Energy Cooling",
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        device_class=SensorDeviceClass.ENERGY,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda data: data.get(FIELD_ENERGY_THERMAL_COOLING),
     ),
     # --- Status (decoded to human-readable text) ----------------------------
     IntergasXtendSensorEntityDescription(

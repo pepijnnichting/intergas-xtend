@@ -75,6 +75,10 @@ views:
           - type: tile
             entity: sensor.intergas_xtend_hot_water_temperature
             name: Hot Water
+          - type: tile
+            entity: sensor.intergas_xtend_delta_t
+            name: Delta T
+            icon: mdi:thermometer-plus
 
       - title: Power & Efficiency
         cards:
@@ -115,6 +119,14 @@ views:
             entity: sensor.intergas_xtend_thermal_energy_boiler
             name: Thermal — Boiler
             icon: mdi:thermometer-lines
+          - type: tile
+            entity: sensor.intergas_xtend_thermal_energy_hot_water
+            name: Thermal — Hot Water
+            icon: mdi:water-boiler
+          - type: tile
+            entity: sensor.intergas_xtend_thermal_energy_cooling
+            name: Thermal — Cooling
+            icon: mdi:snowflake
 
   # ── History ───────────────────────────────────────────────────────────────
   - title: History
@@ -135,6 +147,8 @@ views:
             name: Heating Return
           - entity: sensor.intergas_xtend_hot_water_temperature
             name: Hot Water
+          - entity: sensor.intergas_xtend_delta_t
+            name: Delta T
 
       - type: history-graph
         title: Power (24 h)
@@ -170,3 +184,7 @@ views:
             name: Electric — Heating
           - entity: sensor.intergas_xtend_thermal_energy_boiler
             name: Thermal — Boiler
+          - entity: sensor.intergas_xtend_thermal_energy_hot_water
+            name: Thermal — Hot Water
+          - entity: sensor.intergas_xtend_thermal_energy_cooling
+            name: Thermal — Cooling
