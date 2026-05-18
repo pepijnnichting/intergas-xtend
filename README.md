@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="custom_components/intergas_xtend/icon.png" alt="Intergas Xtend" width="160" />
+  <img src="https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/custom_components/intergas_xtend/icon.png" alt="Intergas Xtend" width="160" />
 </p>
 
 <h1 align="center">Intergas Xtend — Home Assistant Integration</h1>
@@ -117,9 +117,17 @@ A pre-built Lovelace dashboard is included in [`dashboard.yaml`](dashboard.yaml)
 
 To import it:
 
-1. Go to your Home Assistant Overview
-2. Click the pencil icon → three-dot menu → **Edit in YAML**
-3. Replace the contents with `dashboard.yaml` and click **Save**
+1. Copy the contents of [`dashboard.yaml`](https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/dashboard.yaml)
+2. Click the button below to open the dashboard editor in Home Assistant:
+
+<p>
+  <a href="https://my.home-assistant.io/redirect/lovelace_dashboard/">
+    <img src="https://my.home-assistant.io/badges/lovelace_dashboard.svg" alt="Open your Home Assistant dashboard" />
+  </a>
+</p>
+
+3. Click the pencil icon → three-dot menu → **Edit in YAML**
+4. Paste the contents and click **Save**
 
 > Entity IDs in the dashboard are based on the default device name "Intergas Xtend". If yours differ, find the correct IDs at **Settings → Devices & Services → Intergas Xtend**.
 
