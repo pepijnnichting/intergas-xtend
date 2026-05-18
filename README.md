@@ -13,6 +13,7 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 - Flame, pump, heating, and hot water binary sensors
 - Error and notification codes (decoded to plain text)
 - Software version and heating hours (diagnostic)
+- **Xtore hot water tank** (optional) — tank temperatures, flow rate, pump speed, thermal power, and electric energy
 
 ## Requirements
 
@@ -67,6 +68,21 @@ After setup you'll have access to the following entities:
 - **Climate entity:** displays current and target temperature and heating/idle state (read-only — control your setpoint via your room thermostat integration)
 
 All sensors use standard Home Assistant device classes, so energy sensors appear in the Energy Dashboard automatically.
+
+### Xtore hot water tank
+
+If you have an Intergas Xtore boiler vessel connected to your Xtend, six additional sensors are created automatically:
+
+| Sensor | Description |
+|---|---|
+| Hot Water Preheat Temperature | Heat exchanger temperature inside the tank |
+| Cold Water Temperature | Mains cold water inlet temperature |
+| Hot Water Flow Rate | DHW circuit flow rate (L/min) |
+| Hot Water Pump Speed | DHW pump modulation (%) |
+| Hot Water Thermal Power | Thermal power delivered to the tank (kW) |
+| Electric Energy Hot Water | Cumulative electric energy for DHW (kWh) |
+
+When no Xtore is connected, all six sensors show as **unavailable** — they do not affect the rest of the integration.
 
 ## Dashboard
 
