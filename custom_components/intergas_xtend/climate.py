@@ -19,6 +19,7 @@ from .const import (
     FIELD_ROOM_TEMP,
     FIELD_SETPOINT,
     SYSTEM_STATUS_HEATING,
+    SYSTEM_STATUS_COOLING,
     XTEND_UNAVAILABLE,
 )
 
@@ -36,7 +37,7 @@ async def async_setup_entry(
 class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
     """Representation of an Intergas Xtend thermostat (read-only)."""
 
-    _attr_hvac_modes = [HVACMode.HEAT]
+    _attr_hvac_modes = [HVACMode.HEAT, HVACMode.COOL]
     _attr_supported_features = 0
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
 
@@ -79,15 +80,22 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
 
     @property
     def hvac_mode(self) -> HVACMode:
-        """Return hvac operation mode."""
+        """Return the current operating mode."""
+        if not self.coordinator.data:
+            return HVACMode.HEAT
+        if self.coordinator.data.get(FIELD_SYSTEM_STATUS) in SYSTEM_STATUS_COOLING:
+            return HVACMode.COOL
         return HVACMode.HEAT
 
     @property
     def hvac_action(self) -> Optional[HVACAction]:
-        """Return the current HVAC action."""
+        """Return what the system is actively doing right now."""
         if not self.coordinator.data:
             return None
-        if self.coordinator.data.get(FIELD_SYSTEM_STATUS) in SYSTEM_STATUS_HEATING:
+        status = self.coordinator.data.get(FIELD_SYSTEM_STATUS)
+        if status in SYSTEM_STATUS_HEATING:
             return HVACAction.HEATING
+        if status in SYSTEM_STATUS_COOLING:
+            return HVACAction.COOLING
         return HVACAction.IDLE
 
