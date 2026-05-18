@@ -19,16 +19,13 @@ views:
     type: sections
     sections:
 
-      - title: Status
+      # Thermostat centerpiece + status binaries
+      - title: Thermostat
         cards:
-          - type: tile
-            entity: sensor.intergas_xtend_system_status
-            name: System
-            icon: mdi:information
-          - type: tile
-            entity: sensor.intergas_xtend_heat_pump_mode
-            name: Mode
-            icon: mdi:heat-pump
+          - type: thermostat
+            entity: climate.intergas_xtend_thermostat
+            name: Intergas Xtend
+            column_span: 2
           - type: tile
             entity: binary_sensor.intergas_xtend_flame
             name: Flame
@@ -49,6 +46,60 @@ views:
             entity: binary_sensor.intergas_xtend_heatpump_active
             name: Heat Pump
             color: green
+          - type: tile
+            entity: sensor.intergas_xtend_system_status
+            name: System
+            icon: mdi:information
+          - type: tile
+            entity: sensor.intergas_xtend_heat_pump_mode
+            name: Mode
+            icon: mdi:heat-pump
+
+      # Gauge meters for the key live values
+      - title: Live Performance
+        cards:
+          - type: gauge
+            entity: sensor.intergas_xtend_cop
+            name: COP
+            min: 0
+            max: 6
+            needle: true
+            segments:
+              - from: 0
+                color: "#db4437"
+              - from: 2
+                color: "#f4b400"
+              - from: 3
+                color: "#0f9d58"
+          - type: gauge
+            entity: sensor.intergas_xtend_boiler_modulation
+            name: Modulation
+            unit: "%"
+            min: 0
+            max: 100
+            needle: true
+            segments:
+              - from: 0
+                color: "#0f9d58"
+              - from: 60
+                color: "#f4b400"
+              - from: 85
+                color: "#db4437"
+          - type: gauge
+            entity: sensor.intergas_xtend_water_pressure
+            name: Pressure
+            min: 0
+            max: 3
+            needle: true
+            segments:
+              - from: 0
+                color: "#db4437"
+              - from: 1.0
+                color: "#0f9d58"
+              - from: 2.5
+                color: "#f4b400"
+              - from: 2.8
+                color: "#db4437"
 
       - title: Temperatures
         cards:
@@ -80,12 +131,8 @@ views:
             name: Delta T
             icon: mdi:thermometer-plus
 
-      - title: Power & Efficiency
+      - title: Power
         cards:
-          - type: tile
-            entity: sensor.intergas_xtend_cop
-            name: COP
-            icon: mdi:gauge
           - type: tile
             entity: sensor.intergas_xtend_heat_pump_thermal_power
             name: HP Thermal
@@ -95,12 +142,6 @@ views:
           - type: tile
             entity: sensor.intergas_xtend_electric_power
             name: Electric
-          - type: tile
-            entity: sensor.intergas_xtend_boiler_modulation
-            name: Modulation
-          - type: tile
-            entity: sensor.intergas_xtend_water_pressure
-            name: Pressure
           - type: tile
             entity: sensor.intergas_xtend_flow_rate
             name: Flow Rate
@@ -131,9 +172,33 @@ views:
       # Shown as unavailable when Xtore hot water tank is not connected
       - title: Xtore Hot Water Tank
         cards:
-          - type: tile
+          - type: gauge
             entity: sensor.intergas_xtend_tank_hot_water_temperature
-            name: Tank Top (Hot)
+            name: Tank Top
+            min: 0
+            max: 90
+            needle: true
+            segments:
+              - from: 0
+                color: "#4fc3f7"
+              - from: 45
+                color: "#f4b400"
+              - from: 60
+                color: "#db4437"
+          - type: gauge
+            entity: sensor.intergas_xtend_hot_water_pump_speed
+            name: Pump Speed
+            unit: "%"
+            min: 0
+            max: 100
+            needle: true
+            segments:
+              - from: 0
+                color: "#0f9d58"
+              - from: 75
+                color: "#f4b400"
+              - from: 90
+                color: "#db4437"
           - type: tile
             entity: sensor.intergas_xtend_hot_water_preheat_temperature
             name: Preheat
@@ -149,12 +214,8 @@ views:
             entity: sensor.intergas_xtend_hot_water_flow_rate
             name: Flow Rate
           - type: tile
-            entity: sensor.intergas_xtend_hot_water_pump_speed
-            name: Pump Speed
-            icon: mdi:pump
-          - type: tile
             entity: binary_sensor.intergas_xtend_tap_water
-            name: Heating Active
+            name: DHW Active
             color: blue
 
   # ── History ───────────────────────────────────────────────────────────────
