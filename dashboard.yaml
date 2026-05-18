@@ -132,7 +132,7 @@ views:
       - title: Xtore Hot Water Tank
         cards:
           - type: tile
-            entity: sensor.intergas_xtend_hot_water_temperature
+            entity: sensor.intergas_xtend_tank_hot_water_temperature
             name: Tank Top (Hot)
           - type: tile
             entity: sensor.intergas_xtend_hot_water_preheat_temperature
@@ -203,7 +203,7 @@ views:
         title: Xtore Hot Water Tank (24 h)
         hours_to_show: 24
         entities:
-          - entity: sensor.intergas_xtend_hot_water_temperature
+          - entity: sensor.intergas_xtend_tank_hot_water_temperature
             name: Tank Top
           - entity: sensor.intergas_xtend_hot_water_preheat_temperature
             name: Preheat

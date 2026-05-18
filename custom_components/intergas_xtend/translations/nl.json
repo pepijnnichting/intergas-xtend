@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbinden met Intergas Xtend",
+        "description": "## Voordat je verder gaat\n\nDe Xtend moet bereikbaar zijn via Wi-Fi vanaf dit Home Assistant apparaat.\n\n> **Belangrijk:** Omdat de Wi-Fi adapter wordt gebruikt voor het Xtend-netwerk, moet je Home Assistant server via **Ethernet** verbonden zijn met je thuisnetwerk en internet. Zonder bekabelde verbinding verliest Home Assistant de internetverbinding zodra de Wi-Fi is verbonden met de Xtend.\n\n**Stap 1 — Activeer het Xtend-toegangspunt**\nDruk op de knop op de Xtend totdat de led paars knippert.\n\n**Stap 2 — Verbind Home Assistant met het Xtend Wi-Fi**\nGa naar [Instellingen → Systeem → Netwerk](/config/network), klik op je Wi-Fi adapter, scan op toegangspunten en selecteer **Xtend_xxxxxxxxxx** (WPA-PSK). Het wachtwoord staat op de Xtend.\n\n**Stap 3 — Voer hieronder het IP-adres in**\nDe Xtend gebruikt altijd **10.20.30.1** op zijn eigen netwerk. Laat de standaardwaarde staan tenzij je dit hebt gewijzigd.",
+        "data": {
+          "host": "IP-adres",
+          "port": "Poort"
+        },
+        "data_description": {
+          "host": "IP-adres van de Xtend (standaard: 10.20.30.1)",
+          "port": "HTTP-poort van de Xtend (standaard: 80)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan de Xtend niet bereiken. Controleer of Home Assistant verbonden is met het Xtend Wi-Fi netwerk en of het IP-adres correct is.",
+      "invalid_host": "Ongeldig IP-adres",
+      "unknown": "Onverwachte fout"
+    },
+    "abort": {
+      "already_configured": "Dit Xtend-apparaat is al geconfigureerd"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Intergas Xtend instellingen",
+        "data": {
+          "scan_interval": "Polling-interval (seconden)"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak de Xtend wordt uitgevraagd (30–300 s). Houd dit op maximaal 300 s, anders verbreekt het Xtend-toegangspunt de verbinding door inactiviteit."
+        }
+      }
+    }
+  }
+}

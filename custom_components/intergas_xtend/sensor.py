@@ -31,7 +31,8 @@ from .const import (
     FIELD_OUTDOOR_TEMP,
     FIELD_HP_SUPPLY_TEMP,
     FIELD_HP_RETURN_TEMP,
-    FIELD_TAPWATER_TEMP,
+    FIELD_BOILER_DHW_TEMP,
+    FIELD_XTORE_HOT_TEMP,
     FIELD_SETPOINT,
     FIELD_REQUESTED_TEMP,
     FIELD_PRESSURE,
@@ -57,6 +58,8 @@ from .const import (
     FIELD_ERROR_CODE,
     FIELD_NOTIFICATION_CODE,
     FIELD_HEATING_HOURS,
+    FIELD_COOLING_HOURS,
+    FIELD_DHW_HOURS,
     FIELD_SOFTWARE_VERSION,
 )
 
@@ -211,12 +214,12 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         value_fn=lambda data: _temp(data, FIELD_HP_RETURN_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
-        key=FIELD_TAPWATER_TEMP,
+        key=FIELD_BOILER_DHW_TEMP,
         name="Hot Water Temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _temp(data, FIELD_TAPWATER_TEMP),
+        value_fn=lambda data: _temp(data, FIELD_BOILER_DHW_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SETPOINT,
@@ -339,6 +342,15 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     # --- Xtore domestic hot water tank (optional) ---------------------------
     # All fields return 32767 (unavailable) when the Xtore is not connected.
     IntergasXtendSensorEntityDescription(
+        key=FIELD_XTORE_HOT_TEMP,
+        name="Tank Hot Water Temperature",
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:water-boiler",
+        value_fn=lambda data: _temp(data, FIELD_XTORE_HOT_TEMP),
+    ),
+    IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_PREHEAT_TEMP,
         name="Hot Water Preheat Temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -432,6 +444,24 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL_INCREASING,
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: data.get(FIELD_HEATING_HOURS),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_COOLING_HOURS,
+        name="Cooling Hours",
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data.get(FIELD_COOLING_HOURS),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_DHW_HOURS,
+        name="Hot Water Hours",
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data.get(FIELD_DHW_HOURS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SOFTWARE_VERSION,

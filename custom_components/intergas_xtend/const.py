@@ -14,6 +14,7 @@ DEFAULT_SCAN_INTERVAL = 120  # seconds
 # Config flow keys
 CONF_HOST = "host"
 CONF_PORT = "port"
+CONF_SCAN_INTERVAL = "scan_interval"
 
 # ---------------------------------------------------------------------------
 # API field codes — hex keys in the {"stats": {...}} response from:
@@ -29,7 +30,7 @@ FIELD_ROOM_TEMP        = "79b3"   # room temperature
 FIELD_OUTDOOR_TEMP     = "62d1"   # outdoor temperature
 FIELD_HP_SUPPLY_TEMP   = "62e7"   # heating circuit water supply
 FIELD_HP_RETURN_TEMP   = "6280"   # heating circuit water return
-FIELD_TAPWATER_TEMP    = "6269"   # domestic hot water (hot side)
+FIELD_BOILER_DHW_TEMP  = "8edb"   # boiler hot water temperature via OpenTherm
 FIELD_SETPOINT         = "7921"   # room thermostat setpoint
 FIELD_REQUESTED_TEMP   = "7767"   # calculated circuit target temperature
 
@@ -52,6 +53,7 @@ FIELD_ENERGY_THERMAL_COOLING  = "63e4"   # cooling energy
 FIELD_ENERGY_ELECTRIC_DHW     = "6358"   # Xtore DHW electric energy
 
 # Xtore domestic hot water tank (optional accessory — fields return 32767 when not connected)
+FIELD_XTORE_HOT_TEMP     = "6269"   # hot water outlet of Xtore tank, °C, ×0.01
 FIELD_DHW_COLD_TEMP      = "6256"   # cold water inlet to tank, °C, ×0.01
 FIELD_DHW_PREHEAT_TEMP   = "628d"   # preheat / heat exchanger temp, °C, ×0.01
 FIELD_DHW_FLOW_RATE      = "6290"   # DHW circuit flow rate, L/min, ×0.01
@@ -71,21 +73,23 @@ FIELD_PUMP_SPEED     = "701b"   # uint16, rpm
 FIELD_ERROR_CODE        = "4133"   # uint16
 FIELD_NOTIFICATION_CODE = "7940"   # uint8
 FIELD_HEATING_HOURS     = "6ac5"   # uint24, hours
+FIELD_COOLING_HOURS     = "6a78"   # uint24, hours
+FIELD_DHW_HOURS         = "6a6c"   # uint24, hours
 FIELD_SOFTWARE_VERSION  = "47e0"   # bytes, version string
 
 # All fields fetched in a single API call
 ALL_FIELDS = ",".join([
     FIELD_ROOM_TEMP, FIELD_OUTDOOR_TEMP, FIELD_HP_SUPPLY_TEMP, FIELD_HP_RETURN_TEMP,
-    FIELD_TAPWATER_TEMP, FIELD_SETPOINT, FIELD_REQUESTED_TEMP,
+    FIELD_BOILER_DHW_TEMP, FIELD_SETPOINT, FIELD_REQUESTED_TEMP,
     FIELD_PRESSURE, FIELD_FLOW_RATE,
     FIELD_HP_POWER_THERMAL, FIELD_BOILER_POWER_THERMAL, FIELD_POWER_ELECTRIC, FIELD_COP,
     FIELD_ENERGY_THERMAL_HEATING, FIELD_ENERGY_ELECTRIC_HEATING, FIELD_ENERGY_THERMAL_BOILER,
     FIELD_ENERGY_THERMAL_DHW, FIELD_ENERGY_THERMAL_COOLING, FIELD_ENERGY_ELECTRIC_DHW,
-    FIELD_DHW_COLD_TEMP, FIELD_DHW_PREHEAT_TEMP, FIELD_DHW_FLOW_RATE,
+    FIELD_XTORE_HOT_TEMP, FIELD_DHW_COLD_TEMP, FIELD_DHW_PREHEAT_TEMP, FIELD_DHW_FLOW_RATE,
     FIELD_DHW_PUMP_SPEED, FIELD_DHW_POWER_THERMAL,
     FIELD_MODULATION,
     FIELD_SYSTEM_STATUS, FIELD_HEATPUMP_MODE, FIELD_BURNER_STATUS, FIELD_PUMP_SPEED,
-    FIELD_ERROR_CODE, FIELD_NOTIFICATION_CODE, FIELD_HEATING_HOURS, FIELD_SOFTWARE_VERSION,
+    FIELD_ERROR_CODE, FIELD_NOTIFICATION_CODE, FIELD_HEATING_HOURS, FIELD_COOLING_HOURS, FIELD_DHW_HOURS, FIELD_SOFTWARE_VERSION,
 ])
 
 # System status enum values (FIELD_SYSTEM_STATUS = "77dd")
