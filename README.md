@@ -68,6 +68,21 @@ After setup you'll have access to the following entities:
 
 All sensors use standard Home Assistant device classes, so energy sensors appear in the Energy Dashboard automatically.
 
+## Dashboard
+
+A pre-built Lovelace dashboard is included in [`dashboard.yaml`](dashboard.yaml). It provides two views:
+
+- **Overview** — status indicators, all temperatures, power & efficiency, and energy totals as tile cards
+- **History** — 24-hour graphs for temperatures, power, COP/modulation, and a 30-day energy bar chart
+
+To import it:
+
+1. Go to your Home Assistant Overview
+2. Click the pencil icon → three-dot menu → **Edit in YAML**
+3. Replace the contents with `dashboard.yaml` and click **Save**
+
+> Entity IDs in the dashboard are based on the default device name "Intergas Xtend". If yours differ, find the correct IDs at **Settings → Devices & Services → Intergas Xtend**.
+
 ## Credits
 
 Based on the work by [DSchoutsen](https://github.com/DSchoutsen/HA_connection_Xtend).

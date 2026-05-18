@@ -1,0 +1,172 @@
+# Intergas Xtend — Lovelace Dashboard
+#
+# How to import:
+#   1. Open Home Assistant and go to your Overview
+#   2. Click the pencil icon (Edit Dashboard) → three-dot menu → Edit in YAML
+#   3. Replace the contents with this file and click Save
+#
+# Entity IDs are generated from your device name. If yours differ (e.g. you
+# renamed the device or added a suffix), find the correct IDs at:
+#   Settings → Devices & Services → Intergas Xtend → click the device
+
+title: Intergas Xtend
+views:
+
+  # ── Overview ──────────────────────────────────────────────────────────────
+  - title: Overview
+    path: intergas-xtend
+    icon: mdi:heat-pump
+    type: sections
+    sections:
+
+      - title: Status
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_system_status
+            name: System
+            icon: mdi:information
+          - type: tile
+            entity: sensor.intergas_xtend_heat_pump_mode
+            name: Mode
+            icon: mdi:heat-pump
+          - type: tile
+            entity: binary_sensor.intergas_xtend_flame
+            name: Flame
+            color: orange
+          - type: tile
+            entity: binary_sensor.intergas_xtend_heating
+            name: Heating
+            color: deep-orange
+          - type: tile
+            entity: binary_sensor.intergas_xtend_tap_water
+            name: Hot Water
+            color: blue
+          - type: tile
+            entity: binary_sensor.intergas_xtend_pump
+            name: Pump
+            color: cyan
+          - type: tile
+            entity: binary_sensor.intergas_xtend_heatpump_active
+            name: Heat Pump
+            color: green
+
+      - title: Temperatures
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_room_temperature
+            name: Room
+          - type: tile
+            entity: sensor.intergas_xtend_temperature_setpoint
+            name: Setpoint
+            icon: mdi:home-thermometer
+          - type: tile
+            entity: sensor.intergas_xtend_outdoor_temperature
+            name: Outdoor
+          - type: tile
+            entity: sensor.intergas_xtend_heating_supply_temperature
+            name: Heating Supply
+          - type: tile
+            entity: sensor.intergas_xtend_heating_return_temperature
+            name: Heating Return
+          - type: tile
+            entity: sensor.intergas_xtend_requested_circuit_temperature
+            name: Circuit Target
+            icon: mdi:thermometer-auto
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_temperature
+            name: Hot Water
+
+      - title: Power & Efficiency
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_cop
+            name: COP
+            icon: mdi:gauge
+          - type: tile
+            entity: sensor.intergas_xtend_heat_pump_thermal_power
+            name: HP Thermal
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_thermal_power
+            name: Boiler Thermal
+          - type: tile
+            entity: sensor.intergas_xtend_electric_power
+            name: Electric
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_modulation
+            name: Modulation
+          - type: tile
+            entity: sensor.intergas_xtend_water_pressure
+            name: Pressure
+          - type: tile
+            entity: sensor.intergas_xtend_flow_rate
+            name: Flow Rate
+
+      - title: Energy Totals
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_thermal_energy_heating
+            name: Thermal — Heating
+            icon: mdi:fire
+          - type: tile
+            entity: sensor.intergas_xtend_electric_energy_heating
+            name: Electric — Heating
+            icon: mdi:lightning-bolt
+          - type: tile
+            entity: sensor.intergas_xtend_thermal_energy_boiler
+            name: Thermal — Boiler
+            icon: mdi:thermometer-lines
+
+  # ── History ───────────────────────────────────────────────────────────────
+  - title: History
+    path: intergas-xtend-history
+    icon: mdi:chart-line
+    cards:
+      - type: history-graph
+        title: Temperatures (24 h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.intergas_xtend_room_temperature
+            name: Room
+          - entity: sensor.intergas_xtend_outdoor_temperature
+            name: Outdoor
+          - entity: sensor.intergas_xtend_heating_supply_temperature
+            name: Heating Supply
+          - entity: sensor.intergas_xtend_heating_return_temperature
+            name: Heating Return
+          - entity: sensor.intergas_xtend_hot_water_temperature
+            name: Hot Water
+
+      - type: history-graph
+        title: Power (24 h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.intergas_xtend_heat_pump_thermal_power
+            name: HP Thermal
+          - entity: sensor.intergas_xtend_boiler_thermal_power
+            name: Boiler Thermal
+          - entity: sensor.intergas_xtend_electric_power
+            name: Electric
+
+      - type: history-graph
+        title: COP & Modulation (24 h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.intergas_xtend_cop
+            name: COP
+          - entity: sensor.intergas_xtend_boiler_modulation
+            name: Modulation (%)
+
+      - type: statistics-graph
+        title: Energy per day (30 days)
+        period: day
+        days_to_show: 30
+        chart_type: bar
+        stat_types:
+          - sum
+        entities:
+          - entity: sensor.intergas_xtend_thermal_energy_heating
+            name: Thermal — Heating
+          - entity: sensor.intergas_xtend_electric_energy_heating
+            name: Electric — Heating
+          - entity: sensor.intergas_xtend_thermal_energy_boiler
+            name: Thermal — Boiler
