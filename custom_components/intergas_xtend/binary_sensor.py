@@ -10,6 +10,7 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -105,14 +106,14 @@ class IntergasXtendBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._attr_has_entity_name = True
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": "Intergas Xtend",
-            "manufacturer": MANUFACTURER,
-            "model": "Xtend",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._entry_id)},
+            name="Intergas Xtend",
+            manufacturer=MANUFACTURER,
+            model="Xtend",
+        )
 
     @property
     def is_on(self):

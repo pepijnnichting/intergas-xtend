@@ -6,9 +6,9 @@ from typing import Any, Dict, Optional
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
@@ -51,7 +51,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None) -> FlowResult:
+    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None) -> ConfigFlowResult:
         """Handle the initial step."""
         errors: Dict[str, str] = {}
         
@@ -77,23 +77,22 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @config_entries.callback
     def async_get_options_flow(config_entry: "config_entries.ConfigEntry") -> "OptionsFlowHandler":
         """Return the options flow."""
-        return OptionsFlowHandler(config_entry)
+        return OptionsFlowHandler()
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle options flow for Intergas Xtend."""
 
-    def __init__(self, config_entry: "config_entries.ConfigEntry") -> None:
-        """Initialize."""
-        self.config_entry = config_entry
-
     async def async_step_init(
         self, user_input: Optional[Dict[str, Any]] = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
+            return self.async_update_reload_and_abort(
+                self.config_entry,
+                data_updates={},
+                options=user_input,
+            )
         current_interval = self.config_entry.options.get(
             CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
         )
