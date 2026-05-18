@@ -35,5 +35,37 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "system_status": {
+        "state": {
+          "monitor_lockout": "Monitor Lockout",
+          "pump_venting": "Pump Venting",
+          "service": "Service",
+          "defrost": "Defrost",
+          "hot_water": "Hot Water",
+          "heating_comfort": "Heating Comfort",
+          "heating_eco": "Heating Eco",
+          "cooling": "Cooling",
+          "hot_water_hx": "Hot Water (HX)",
+          "floor_heating": "Floor Heating",
+          "anti_freeze": "Anti Freeze",
+          "pump_maintenance": "Pump Maintenance",
+          "idle": "Idle",
+          "standby": "Standby"
+        }
+      },
+      "heatpump_mode": {
+        "state": {
+          "hot_water": "Hot Water",
+          "heating": "Heating",
+          "cooling": "Cooling",
+          "pumpdown": "Pumpdown",
+          "off": "Off",
+          "undefined": "Undefined"
+        }
+      }
+    }
   }
 }

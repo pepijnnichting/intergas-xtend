@@ -10,6 +10,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
+from . import IntergasXtendConfigEntry
 from homeassistant.const import (
     EntityCategory,
     PERCENTAGE,
@@ -72,16 +73,16 @@ _LOGGER = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _SYSTEM_STATUS: dict[int, str] = {
-    0: "Monitor Lockout",  1: "Pump Venting",    2: "Service",
-    3: "Defrost",          4: "Hot Water",        5: "Heating Comfort",
-    6: "Heating Eco",      7: "Cooling",          8: "Hot Water (HX)",
-    9: "Floor Heating",   12: "Anti Freeze",     13: "Pump Maintenance",
-    14: "Idle",          255: "Standby",
+    0: "monitor_lockout",  1: "pump_venting",    2: "service",
+    3: "defrost",          4: "hot_water",        5: "heating_comfort",
+    6: "heating_eco",      7: "cooling",          8: "hot_water_hx",
+    9: "floor_heating",   12: "anti_freeze",     13: "pump_maintenance",
+    14: "idle",          255: "standby",
 }
 
 _HEATPUMP_MODE: dict[int, str] = {
-    0: "Hot Water", 1: "Heating", 2: "Cooling",
-    253: "Pumpdown", 254: "Off", 255: "Undefined",
+    0: "hot_water", 1: "heating", 2: "cooling",
+    253: "pumpdown", 254: "off", 255: "undefined",
 }
 
 _ERROR_CODES: dict[int, str] = {
@@ -159,6 +160,14 @@ def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
     if raw is None:
         return None
     return mapping.get(raw, f"Unknown ({raw})")
+
+
+def _decode_enum(data: dict, key: str, mapping: dict) -> Optional[str]:
+    """Decode an integer enum field to a translation-key slug; None for unknown values."""
+    raw = data.get(key)
+    if raw is None:
+        return None
+    return mapping.get(raw)
 
 
 def _delta_t(data: dict) -> Optional[float]:
@@ -420,14 +429,20 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     IntergasXtendSensorEntityDescription(
         key=FIELD_SYSTEM_STATUS,
         name="System Status",
+        device_class=SensorDeviceClass.ENUM,
+        translation_key="system_status",
+        options=list(_SYSTEM_STATUS.values()),
         icon="mdi:information",
-        value_fn=lambda data: _decode(data, FIELD_SYSTEM_STATUS, _SYSTEM_STATUS),
+        value_fn=lambda data: _decode_enum(data, FIELD_SYSTEM_STATUS, _SYSTEM_STATUS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HEATPUMP_MODE,
         name="Heat Pump Mode",
+        device_class=SensorDeviceClass.ENUM,
+        translation_key="heatpump_mode",
+        options=list(_HEATPUMP_MODE.values()),
         icon="mdi:heat-pump",
-        value_fn=lambda data: _decode(data, FIELD_HEATPUMP_MODE, _HEATPUMP_MODE),
+        value_fn=lambda data: _decode_enum(data, FIELD_HEATPUMP_MODE, _HEATPUMP_MODE),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_MODULATION,
@@ -490,10 +505,10 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant, entry: IntergasXtendConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Intergas Xtend sensors."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = entry.runtime_data.coordinator
     async_add_entities(
         IntergasXtendSensor(coordinator, entry.entry_id, description)
         for description in SENSOR_DESCRIPTIONS
