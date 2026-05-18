@@ -1,4 +1,28 @@
-# Intergas Xtend Integration for Home Assistant
+<p align="center">
+  <img src="custom_components/intergas_xtend/icon.png" alt="Intergas Xtend" width="160" />
+</p>
+
+<h1 align="center">Intergas Xtend — Home Assistant Integration</h1>
+
+<p align="center">
+  Local Wi-Fi integration for the Intergas Xtend hybrid heat pump.<br>
+  No cloud. No subscription. Full control from Home Assistant.
+</p>
+
+<p align="center">
+  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=pepijnnichting&repository=intergas-xtend&category=integration">
+    <img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Open in HACS" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/HACS-Custom-orange?logo=home-assistant-community-store" alt="HACS Custom" />
+  <img src="https://img.shields.io/badge/HA-2026.5%2B-blue?logo=home-assistant" alt="Home Assistant 2026.5+" />
+  <img src="https://img.shields.io/github/v/release/pepijnnichting/intergas-xtend" alt="GitHub release" />
+  <img src="https://img.shields.io/github/license/pepijnnichting/intergas-xtend" alt="License" />
+</p>
+
+---
 
 This integration connects directly to your Intergas Xtend hybrid heat pump over Wi-Fi, allowing you to monitor your heating system from Home Assistant.
 
@@ -42,8 +66,8 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
 ### HACS (recommended)
 
 1. Ensure you have [HACS](https://hacs.xyz/) installed
-2. Go to HACS > Integrations
-3. Add this repository as a custom repository
+2. Go to **HACS → three-dot menu → Custom repositories**
+3. Add `https://github.com/pepijnnichting/intergas-xtend` as an **Integration**
 4. Search for "Intergas Xtend" and install it
 5. Restart Home Assistant
 
@@ -73,14 +97,14 @@ All sensors use standard Home Assistant device classes, so energy sensors appear
 
 If you have an Intergas Xtore boiler vessel connected to your Xtend, six additional sensors are created automatically:
 
-| Sensor | Description |
-|---|---|
+| Sensor                        | Description                                |
+| ----------------------------- | ------------------------------------------ |
 | Hot Water Preheat Temperature | Heat exchanger temperature inside the tank |
-| Cold Water Temperature | Mains cold water inlet temperature |
-| Hot Water Flow Rate | DHW circuit flow rate (L/min) |
-| Hot Water Pump Speed | DHW pump modulation (%) |
-| Hot Water Thermal Power | Thermal power delivered to the tank (kW) |
-| Electric Energy Hot Water | Cumulative electric energy for DHW (kWh) |
+| Cold Water Temperature        | Mains cold water inlet temperature         |
+| Hot Water Flow Rate           | DHW circuit flow rate (L/min)              |
+| Hot Water Pump Speed          | DHW pump modulation (%)                    |
+| Hot Water Thermal Power       | Thermal power delivered to the tank (kW)   |
+| Electric Energy Hot Water     | Cumulative electric energy for DHW (kWh)   |
 
 When no Xtore is connected, all six sensors show as **unavailable** — they do not affect the rest of the integration.
 

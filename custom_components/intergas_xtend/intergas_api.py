@@ -1,8 +1,6 @@
 """API client for Intergas Xtend."""
-import asyncio
 import aiohttp
 import logging
-from typing import Any, Dict, Optional
 
 from .const import DEFAULT_TIMEOUT, ALL_FIELDS
 
@@ -19,7 +17,7 @@ class ConnectionFailedError(IntergasXtendError):
 class IntergasXtendApi:
     """API Client for Intergas Xtend."""
 
-    def __init__(self, host: str, port: int = 80, session: Optional[aiohttp.ClientSession] = None):
+    def __init__(self, host: str, port: int = 80, session: aiohttp.ClientSession | None = None):
         """Initialize the API client."""
         self.host = host
         self.port = port
@@ -39,7 +37,7 @@ class IntergasXtendApi:
                 f"Failed to connect to Intergas Xtend at http://{self.host}:{self.port}"
             ) from ex
 
-    async def get_data(self) -> Dict[str, int]:
+    async def get_data(self) -> dict[str, int]:
         """Get current stats from the Intergas Xtend.
 
         The Xtend API endpoint is:
@@ -62,9 +60,9 @@ class IntergasXtendApi:
                         f"Failed to get data: HTTP {response.status}"
                     )
                 payload = await response.json(content_type=None)
-                stats: Dict[str, int] = payload.get("stats", {})
+                stats: dict[str, int] = payload.get("stats", {})
                 return stats
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise ConnectionFailedError(
                 f"Connection to {self._stats_url} timed out"
             )

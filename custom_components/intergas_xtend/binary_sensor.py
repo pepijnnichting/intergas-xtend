@@ -1,17 +1,19 @@
 """Binary sensor platform for Intergas Xtend integration."""
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Dict, Optional
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import IntergasXtendConfigEntry
 
 from .const import (
     DOMAIN,
@@ -32,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 class IntergasXtendBinarySensorEntityDescription(BinarySensorEntityDescription):
     """Class describing Intergas Xtend binary sensor entities."""
 
-    is_on_fn: Optional[Callable[[Dict], bool]] = None
+    is_on_fn: Callable[[dict], bool] | None = None
 
 
 BINARY_SENSOR_DESCRIPTIONS: tuple[IntergasXtendBinarySensorEntityDescription, ...] = (
@@ -79,11 +81,10 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[IntergasXtendBinarySensorEntityDescription, ..
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant, entry: IntergasXtendConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up Intergas Xtend binary sensors."""
-    data = hass.data[DOMAIN][entry.entry_id]
-    coordinator = data["coordinator"]
+    coordinator = entry.runtime_data.coordinator
 
     async_add_entities(
         IntergasXtendBinarySensor(coordinator, entry.entry_id, description)
@@ -105,14 +106,14 @@ class IntergasXtendBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._attr_has_entity_name = True
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": "Intergas Xtend",
-            "manufacturer": MANUFACTURER,
-            "model": "Xtend",
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._entry_id)},
+            name="Intergas Xtend",
+            manufacturer=MANUFACTURER,
+            model="Xtend",
+        )
 
     @property
     def is_on(self):

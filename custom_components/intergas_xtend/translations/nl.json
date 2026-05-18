@@ -35,5 +35,37 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "system_status": {
+        "state": {
+          "monitor_lockout": "Monitor Vergrendeld",
+          "pump_venting": "Pomp Ontluchten",
+          "service": "Onderhoud",
+          "defrost": "Ontdooien",
+          "hot_water": "Warm Water",
+          "heating_comfort": "Verwarming Comfort",
+          "heating_eco": "Verwarming Eco",
+          "cooling": "Koeling",
+          "hot_water_hx": "Warm Water (WW)",
+          "floor_heating": "Vloerverwarming",
+          "anti_freeze": "Vorstbeveiliging",
+          "pump_maintenance": "Pompbeheer",
+          "idle": "Inactief",
+          "standby": "Stand-by"
+        }
+      },
+      "heatpump_mode": {
+        "state": {
+          "hot_water": "Warm Water",
+          "heating": "Verwarming",
+          "cooling": "Koeling",
+          "pumpdown": "Pomp Afstoten",
+          "off": "Uit",
+          "undefined": "Onbekend"
+        }
+      }
+    }
   }
 }

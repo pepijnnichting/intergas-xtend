@@ -1,7 +1,7 @@
 """Sensor platform for Intergas Xtend integration."""
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -9,7 +9,6 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     EntityCategory,
     PERCENTAGE,
@@ -21,8 +20,11 @@ from homeassistant.const import (
     UnitOfVolumeFlowRate,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from . import IntergasXtendConfigEntry
 
 from .const import (
     DOMAIN,
@@ -71,16 +73,16 @@ _LOGGER = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _SYSTEM_STATUS: dict[int, str] = {
-    0: "Monitor Lockout",  1: "Pump Venting",    2: "Service",
-    3: "Defrost",          4: "Hot Water",        5: "Heating Comfort",
-    6: "Heating Eco",      7: "Cooling",          8: "Hot Water (HX)",
-    9: "Floor Heating",   12: "Anti Freeze",     13: "Pump Maintenance",
-    14: "Idle",          255: "Standby",
+    0: "monitor_lockout",  1: "pump_venting",    2: "service",
+    3: "defrost",          4: "hot_water",        5: "heating_comfort",
+    6: "heating_eco",      7: "cooling",          8: "hot_water_hx",
+    9: "floor_heating",   12: "anti_freeze",     13: "pump_maintenance",
+    14: "idle",          255: "standby",
 }
 
 _HEATPUMP_MODE: dict[int, str] = {
-    0: "Hot Water", 1: "Heating", 2: "Cooling",
-    253: "Pumpdown", 254: "Off", 255: "Undefined",
+    0: "hot_water", 1: "heating", 2: "cooling",
+    253: "pumpdown", 254: "off", 255: "undefined",
 }
 
 _ERROR_CODES: dict[int, str] = {
@@ -136,7 +138,7 @@ _NOTIFICATION_CODES: dict[int, str] = {
 # Value helper functions
 # ---------------------------------------------------------------------------
 
-def _temp(data: dict, key: str) -> Optional[float]:
+def _temp(data: dict, key: str) -> float | None:
     """Temperature in °C (int16 ×0.01); None when unavailable (32767)."""
     raw = data.get(key)
     if raw is None or raw == XTEND_UNAVAILABLE:
@@ -144,7 +146,7 @@ def _temp(data: dict, key: str) -> Optional[float]:
     return round(raw * 0.01, 2)
 
 
-def _int16(data: dict, key: str, factor: float) -> Optional[float]:
+def _int16(data: dict, key: str, factor: float) -> float | None:
     """Scaled int16 value; None when unavailable (32767)."""
     raw = data.get(key)
     if raw is None or raw == XTEND_UNAVAILABLE:
@@ -152,7 +154,7 @@ def _int16(data: dict, key: str, factor: float) -> Optional[float]:
     return round(raw * factor, 2)
 
 
-def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
+def _decode(data: dict, key: str, mapping: dict) -> str | None:
     """Decode an integer enum field to a human-readable string."""
     raw = data.get(key)
     if raw is None:
@@ -160,7 +162,15 @@ def _decode(data: dict, key: str, mapping: dict) -> Optional[str]:
     return mapping.get(raw, f"Unknown ({raw})")
 
 
-def _delta_t(data: dict) -> Optional[float]:
+def _decode_enum(data: dict, key: str, mapping: dict) -> str | None:
+    """Decode an integer enum field to a translation-key slug; None for unknown values."""
+    raw = data.get(key)
+    if raw is None:
+        return None
+    return mapping.get(raw)
+
+
+def _delta_t(data: dict) -> float | None:
     """Supply minus return temperature in °C; None when either is unavailable."""
     supply = _temp(data, FIELD_HP_SUPPLY_TEMP)
     ret = _temp(data, FIELD_HP_RETURN_TEMP)
@@ -188,6 +198,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_ROOM_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
@@ -196,6 +207,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_OUTDOOR_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
@@ -204,6 +216,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_HP_SUPPLY_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
@@ -212,6 +225,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_HP_RETURN_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
@@ -220,6 +234,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_BOILER_DHW_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
@@ -228,6 +243,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_SETPOINT),
     ),
     IntergasXtendSensorEntityDescription(
@@ -236,6 +252,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:thermometer-auto",
         value_fn=lambda data: _temp(data, FIELD_REQUESTED_TEMP),
     ),
@@ -245,6 +262,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:thermometer-plus",
         value_fn=_delta_t,
     ),
@@ -255,6 +273,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPressure.BAR,
         device_class=SensorDeviceClass.PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
         value_fn=lambda data: _int16(data, FIELD_PRESSURE, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
@@ -263,6 +282,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _int16(data, FIELD_FLOW_RATE, 0.01),
     ),
     # --- Power --------------------------------------------------------------
@@ -272,6 +292,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
         value_fn=lambda data: _int16(data, FIELD_HP_POWER_THERMAL, 0.001),
     ),
     IntergasXtendSensorEntityDescription(
@@ -280,6 +301,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
         value_fn=lambda data: _int16(data, FIELD_BOILER_POWER_THERMAL, 0.001),
     ),
     IntergasXtendSensorEntityDescription(
@@ -288,12 +310,14 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         value_fn=lambda data: _int16(data, FIELD_POWER_ELECTRIC, 1.0),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_COP,
         name="COP",
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:gauge",
         value_fn=lambda data: round(data[FIELD_COP] * 0.1, 1)
         if data.get(FIELD_COP) is not None
@@ -348,6 +372,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:water-boiler",
         value_fn=lambda data: _temp(data, FIELD_XTORE_HOT_TEMP),
     ),
@@ -357,6 +382,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:water-thermometer",
         value_fn=lambda data: _temp(data, FIELD_DHW_PREHEAT_TEMP),
     ),
@@ -366,6 +392,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         icon="mdi:water-thermometer-outline",
         value_fn=lambda data: _temp(data, FIELD_DHW_COLD_TEMP),
     ),
@@ -375,6 +402,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda data: _int16(data, FIELD_DHW_FLOW_RATE, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
@@ -382,6 +410,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         name="Hot Water Pump Speed",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         icon="mdi:pump",
         value_fn=lambda data: _int16(data, FIELD_DHW_PUMP_SPEED, 0.01),
     ),
@@ -391,6 +420,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
         value_fn=lambda data: _int16(data, FIELD_DHW_POWER_THERMAL, 0.001),
     ),
     IntergasXtendSensorEntityDescription(
@@ -405,14 +435,20 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     IntergasXtendSensorEntityDescription(
         key=FIELD_SYSTEM_STATUS,
         name="System Status",
+        device_class=SensorDeviceClass.ENUM,
+        translation_key="system_status",
+        options=list(_SYSTEM_STATUS.values()),
         icon="mdi:information",
-        value_fn=lambda data: _decode(data, FIELD_SYSTEM_STATUS, _SYSTEM_STATUS),
+        value_fn=lambda data: _decode_enum(data, FIELD_SYSTEM_STATUS, _SYSTEM_STATUS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HEATPUMP_MODE,
         name="Heat Pump Mode",
+        device_class=SensorDeviceClass.ENUM,
+        translation_key="heatpump_mode",
+        options=list(_HEATPUMP_MODE.values()),
         icon="mdi:heat-pump",
-        value_fn=lambda data: _decode(data, FIELD_HEATPUMP_MODE, _HEATPUMP_MODE),
+        value_fn=lambda data: _decode_enum(data, FIELD_HEATPUMP_MODE, _HEATPUMP_MODE),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_MODULATION,
@@ -475,10 +511,10 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant, entry: IntergasXtendConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the Intergas Xtend sensors."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = entry.runtime_data.coordinator
     async_add_entities(
         IntergasXtendSensor(coordinator, entry.entry_id, description)
         for description in SENSOR_DESCRIPTIONS
@@ -502,12 +538,17 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
         self._attr_has_entity_name = True
 
     @property
-    def device_info(self) -> dict:
+    def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": "Intergas Xtend",
-            "manufacturer": MANUFACTURER,(self):
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._entry_id)},
+            name="Intergas Xtend",
+            manufacturer=MANUFACTURER,
+            model="Xtend",
+        )
+
+    @property
+    def native_value(self):
         """Return the sensor value."""
         if not self.coordinator.data:
             return None

@@ -1,14 +1,14 @@
 """Config flow for Intergas Xtend integration."""
 import logging
 import ipaddress
-from typing import Any, Dict, Optional
+from typing import Any
 
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigFlowResult
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import DOMAIN, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
@@ -31,17 +31,17 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     }
 )
 
-async def validate_input(hass: HomeAssistant, data: Dict[str, Any]) -> Dict[str, Any]:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     if not is_valid_ip(data[CONF_HOST]):
-        raise InvalidHost
+        raise InvalidHost()
     
     api = IntergasXtendApi(data[CONF_HOST], data[CONF_PORT], session=async_get_clientsession(hass))
     
     try:
         await api.login()
     except ConnectionFailedError:
-        raise CannotConnect
+        raise CannotConnect()
     
     # Return info to be stored in the config entry
     return {"title": f"Intergas Xtend ({data[CONF_HOST]})"}
@@ -51,9 +51,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None) -> FlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle the initial step."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
         
         if user_input is not None:
             try:
@@ -65,7 +65,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             except InvalidHost:
                 errors["host"] = "invalid_host"
-            except Exception:  # pylint: disable=broad-except
+            except Exception:  # noqa: BLE001
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
         
@@ -75,7 +75,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @config_entries.callback
-    def async_get_options_flow(config_entry: "config_entries.ConfigEntry") -> "OptionsFlowHandler":
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> "OptionsFlowHandler":
         """Return the options flow."""
         return OptionsFlowHandler(config_entry)
 
@@ -83,17 +83,16 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle options flow for Intergas Xtend."""
 
-    def __init__(self, config_entry: "config_entries.ConfigEntry") -> None:
-        """Initialize."""
-        self.config_entry = config_entry
-
     async def async_step_init(
-        self, user_input: Optional[Dict[str, Any]] = None
-    ) -> FlowResult:
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
+            return self.async_update_reload_and_abort(
+                self.config_entry,
+                data_updates={},
+                options=user_input,
+            )
         current_interval = self.config_entry.options.get(
             CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
         )

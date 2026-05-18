@@ -19,16 +19,13 @@ views:
     type: sections
     sections:
 
-      - title: Status
+      # Thermostat centerpiece + status binaries
+      - title: Thermostat
         cards:
-          - type: tile
-            entity: sensor.intergas_xtend_system_status
-            name: System
-            icon: mdi:information
-          - type: tile
-            entity: sensor.intergas_xtend_heat_pump_mode
-            name: Mode
-            icon: mdi:heat-pump
+          - type: thermostat
+            entity: climate.intergas_xtend_thermostat
+            name: Intergas Xtend
+            column_span: 2
           - type: tile
             entity: binary_sensor.intergas_xtend_flame
             name: Flame
@@ -49,6 +46,60 @@ views:
             entity: binary_sensor.intergas_xtend_heatpump_active
             name: Heat Pump
             color: green
+          - type: tile
+            entity: sensor.intergas_xtend_system_status
+            name: System
+            icon: mdi:information
+          - type: tile
+            entity: sensor.intergas_xtend_heat_pump_mode
+            name: Mode
+            icon: mdi:heat-pump
+
+      # Gauge meters for the key live values
+      - title: Live Performance
+        cards:
+          - type: gauge
+            entity: sensor.intergas_xtend_cop
+            name: COP
+            min: 0
+            max: 6
+            needle: true
+            segments:
+              - from: 0
+                color: "#db4437"
+              - from: 2
+                color: "#f4b400"
+              - from: 3
+                color: "#0f9d58"
+          - type: gauge
+            entity: sensor.intergas_xtend_boiler_modulation
+            name: Modulation
+            unit: "%"
+            min: 0
+            max: 100
+            needle: true
+            segments:
+              - from: 0
+                color: "#0f9d58"
+              - from: 60
+                color: "#f4b400"
+              - from: 85
+                color: "#db4437"
+          - type: gauge
+            entity: sensor.intergas_xtend_water_pressure
+            name: Pressure
+            min: 0
+            max: 3
+            needle: true
+            segments:
+              - from: 0
+                color: "#db4437"
+              - from: 1.0
+                color: "#0f9d58"
+              - from: 2.5
+                color: "#f4b400"
+              - from: 2.8
+                color: "#db4437"
 
       - title: Temperatures
         cards:
@@ -80,12 +131,8 @@ views:
             name: Delta T
             icon: mdi:thermometer-plus
 
-      - title: Power & Efficiency
+      - title: Power
         cards:
-          - type: tile
-            entity: sensor.intergas_xtend_cop
-            name: COP
-            icon: mdi:gauge
           - type: tile
             entity: sensor.intergas_xtend_heat_pump_thermal_power
             name: HP Thermal
@@ -95,12 +142,6 @@ views:
           - type: tile
             entity: sensor.intergas_xtend_electric_power
             name: Electric
-          - type: tile
-            entity: sensor.intergas_xtend_boiler_modulation
-            name: Modulation
-          - type: tile
-            entity: sensor.intergas_xtend_water_pressure
-            name: Pressure
           - type: tile
             entity: sensor.intergas_xtend_flow_rate
             name: Flow Rate
@@ -131,9 +172,33 @@ views:
       # Shown as unavailable when Xtore hot water tank is not connected
       - title: Xtore Hot Water Tank
         cards:
-          - type: tile
+          - type: gauge
             entity: sensor.intergas_xtend_tank_hot_water_temperature
-            name: Tank Top (Hot)
+            name: Tank Top
+            min: 0
+            max: 90
+            needle: true
+            segments:
+              - from: 0
+                color: "#4fc3f7"
+              - from: 45
+                color: "#f4b400"
+              - from: 60
+                color: "#db4437"
+          - type: gauge
+            entity: sensor.intergas_xtend_hot_water_pump_speed
+            name: Pump Speed
+            unit: "%"
+            min: 0
+            max: 100
+            needle: true
+            segments:
+              - from: 0
+                color: "#0f9d58"
+              - from: 75
+                color: "#f4b400"
+              - from: 90
+                color: "#db4437"
           - type: tile
             entity: sensor.intergas_xtend_hot_water_preheat_temperature
             name: Preheat
@@ -149,84 +214,87 @@ views:
             entity: sensor.intergas_xtend_hot_water_flow_rate
             name: Flow Rate
           - type: tile
-            entity: sensor.intergas_xtend_hot_water_pump_speed
-            name: Pump Speed
-            icon: mdi:pump
-          - type: tile
             entity: binary_sensor.intergas_xtend_tap_water
-            name: Heating Active
+            name: DHW Active
             color: blue
 
   # ── History ───────────────────────────────────────────────────────────────
   - title: History
     path: intergas-xtend-history
     icon: mdi:chart-line
-    cards:
-      - type: history-graph
-        title: Temperatures (24 h)
-        hours_to_show: 24
-        entities:
-          - entity: sensor.intergas_xtend_room_temperature
-            name: Room
-          - entity: sensor.intergas_xtend_outdoor_temperature
-            name: Outdoor
-          - entity: sensor.intergas_xtend_heating_supply_temperature
-            name: Heating Supply
-          - entity: sensor.intergas_xtend_heating_return_temperature
-            name: Heating Return
-          - entity: sensor.intergas_xtend_hot_water_temperature
-            name: Hot Water
-          - entity: sensor.intergas_xtend_delta_t
-            name: Delta T
+    type: sections
+    sections:
 
-      - type: history-graph
-        title: Power (24 h)
-        hours_to_show: 24
-        entities:
-          - entity: sensor.intergas_xtend_heat_pump_thermal_power
-            name: HP Thermal
-          - entity: sensor.intergas_xtend_boiler_thermal_power
-            name: Boiler Thermal
-          - entity: sensor.intergas_xtend_electric_power
-            name: Electric
+      - title: Temperatures (24 h)
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.intergas_xtend_room_temperature
+                name: Room
+              - entity: sensor.intergas_xtend_outdoor_temperature
+                name: Outdoor
+              - entity: sensor.intergas_xtend_heating_supply_temperature
+                name: Heating Supply
+              - entity: sensor.intergas_xtend_heating_return_temperature
+                name: Heating Return
+              - entity: sensor.intergas_xtend_hot_water_temperature
+                name: Hot Water
+              - entity: sensor.intergas_xtend_delta_t
+                name: Delta T
 
-      - type: history-graph
-        title: COP & Modulation (24 h)
-        hours_to_show: 24
-        entities:
-          - entity: sensor.intergas_xtend_cop
-            name: COP
-          - entity: sensor.intergas_xtend_boiler_modulation
-            name: Modulation (%)
+      - title: Power (24 h)
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.intergas_xtend_heat_pump_thermal_power
+                name: HP Thermal
+              - entity: sensor.intergas_xtend_boiler_thermal_power
+                name: Boiler Thermal
+              - entity: sensor.intergas_xtend_electric_power
+                name: Electric
 
-      - type: history-graph
-        title: Xtore Hot Water Tank (24 h)
-        hours_to_show: 24
-        entities:
-          - entity: sensor.intergas_xtend_tank_hot_water_temperature
-            name: Tank Top
-          - entity: sensor.intergas_xtend_hot_water_preheat_temperature
-            name: Preheat
-          - entity: sensor.intergas_xtend_cold_water_temperature
-            name: Cold Inlet
+      - title: COP & Modulation (24 h)
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.intergas_xtend_cop
+                name: COP
+              - entity: sensor.intergas_xtend_boiler_modulation
+                name: Modulation (%)
 
-      - type: statistics-graph
-        title: Energy per day (30 days)
-        period: day
-        days_to_show: 30
-        chart_type: bar
-        stat_types:
-          - sum
-        entities:
-          - entity: sensor.intergas_xtend_thermal_energy_heating
-            name: Thermal — Heating
-          - entity: sensor.intergas_xtend_electric_energy_heating
-            name: Electric — Heating
-          - entity: sensor.intergas_xtend_thermal_energy_boiler
-            name: Thermal — Boiler
-          - entity: sensor.intergas_xtend_thermal_energy_hot_water
-            name: Thermal — Hot Water
-          - entity: sensor.intergas_xtend_thermal_energy_cooling
-            name: Thermal — Cooling
-          - entity: sensor.intergas_xtend_electric_energy_hot_water
-            name: Electric — Hot Water
+      - title: Xtore Hot Water Tank (24 h)
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.intergas_xtend_tank_hot_water_temperature
+                name: Tank Top
+              - entity: sensor.intergas_xtend_hot_water_preheat_temperature
+                name: Preheat
+              - entity: sensor.intergas_xtend_cold_water_temperature
+                name: Cold Inlet
+
+      - title: Energy per day (30 days)
+        cards:
+          - type: statistics-graph
+            period: day
+            days_to_show: 30
+            chart_type: bar
+            stat_types:
+              - sum
+            entities:
+              - entity: sensor.intergas_xtend_thermal_energy_heating
+                name: Thermal — Heating
+              - entity: sensor.intergas_xtend_electric_energy_heating
+                name: Electric — Heating
+              - entity: sensor.intergas_xtend_thermal_energy_boiler
+                name: Thermal — Boiler
+              - entity: sensor.intergas_xtend_thermal_energy_hot_water
+                name: Thermal — Hot Water
+              - entity: sensor.intergas_xtend_thermal_energy_cooling
+                name: Thermal — Cooling
+              - entity: sensor.intergas_xtend_electric_energy_hot_water
+                name: Electric — Hot Water
