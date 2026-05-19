@@ -199,3 +199,79 @@ async def test_options_flow_saves_interval(hass: HomeAssistant, mock_api_login) 
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert entry.options[CONF_SCAN_INTERVAL] == 60
+
+
+# ---------------------------------------------------------------------------
+# Reconfigure flow
+# ---------------------------------------------------------------------------
+
+
+async def test_reconfigure_shows_form(hass: HomeAssistant, mock_api_login) -> None:
+    """Test that the reconfigure step shows the form pre-filled with current data."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    await hass.config_entries.flow.async_configure(result["flow_id"], VALID_INPUT)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_RECONFIGURE, "entry_id": entry.entry_id},
+    )
+
+    assert result["type"] == FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+    assert result["errors"] == {}
+
+
+async def test_reconfigure_success(hass: HomeAssistant, mock_api_login) -> None:
+    """Test that the reconfigure step saves updated host/port."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    await hass.config_entries.flow.async_configure(result["flow_id"], VALID_INPUT)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_RECONFIGURE, "entry_id": entry.entry_id},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {CONF_HOST: "10.20.30.2", CONF_PORT: 8080}
+    )
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.data[CONF_HOST] == "10.20.30.2"
+    assert entry.data[CONF_PORT] == 8080
+
+
+async def test_reconfigure_cannot_connect(hass: HomeAssistant, mock_api_login) -> None:
+    """Test that a connection failure during reconfigure shows an error."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    await hass.config_entries.flow.async_configure(result["flow_id"], VALID_INPUT)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_RECONFIGURE, "entry_id": entry.entry_id},
+    )
+
+    with patch(
+        "custom_components.intergas_xtend.config_flow.IntergasXtendApi"
+    ) as mock:
+        mock.return_value.login = AsyncMock(
+            side_effect=ConnectionFailedError("timeout")
+        )
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_HOST: "10.20.30.2", CONF_PORT: 80}
+        )
+
+    assert result["type"] == FlowResultType.FORM
+    assert result["errors"] == {"base": "cannot_connect"}
+

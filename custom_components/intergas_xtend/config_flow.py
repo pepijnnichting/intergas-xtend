@@ -73,6 +73,45 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Allow the user to update host/port without removing the entry."""
+        errors: dict[str, str] = {}
+        reconfigure_entry = self._get_reconfigure_entry()
+
+        if user_input is not None:
+            try:
+                await validate_input(self.hass, user_input)
+                return self.async_update_reload_and_abort(
+                    reconfigure_entry,
+                    data_updates=user_input,
+                )
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
+            except InvalidHost:
+                errors["host"] = "invalid_host"
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected exception during reconfigure")
+                errors["base"] = "unknown"
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_HOST,
+                        default=reconfigure_entry.data.get(CONF_HOST, DEFAULT_HOST),
+                    ): str,
+                    vol.Required(
+                        CONF_PORT,
+                        default=reconfigure_entry.data.get(CONF_PORT, DEFAULT_PORT),
+                    ): int,
+                }
+            ),
+            errors=errors,
+        )
+
     @staticmethod
     @config_entries.callback
     def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> "OptionsFlowHandler":

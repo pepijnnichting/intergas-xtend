@@ -136,6 +136,18 @@ Every change must keep the integration passing both levels.
 - `log-when-unavailable` — handled automatically by `DataUpdateCoordinator`
 - `reauthentication-flow` — EXEMPT (no authentication required)
 
+### Gold requirements (all met)
+
+- `diagnostics` — `diagnostics.py` with `async_get_config_entry_diagnostics`
+- `reconfiguration-flow` — `async_step_reconfigure` in `ConfigFlow`; uses `async_update_reload_and_abort`
+- `entity-translations` — `translation_key=` on all entities; names in `strings.json` + translation files under `entity.<platform>.<key>.name`
+- `icon-translations` — `icons.json` (separate file) under `entity.<platform>.<key>.default`; only non-device-class icons (temperature/pressure/energy sensors use device class icon)
+- `exception-translations` — `exceptions` section in `strings.json` with `message` per key
+- `entity-disabled-by-default` — `entity_registry_enabled_default=False` on Xtore sensors + diagnostic sensors (13 total)
+- `devices`, `entity-category`, `entity-device-class` — already satisfied by DeviceInfo, EntityCategory.DIAGNOSTIC, and device_class fields
+- `discovery`, `discovery-update-info`, `dynamic-devices`, `stale-devices`, `repair-issues` — all **EXEMPT** (single static device, local polling)
+- 7 docs rules met in `README.md`: troubleshooting, diagnostics, supported hardware, known limitations, removal, installation, usage
+
 ### Testing rules
 
 - All new code paths must have matching tests in `tests/`.

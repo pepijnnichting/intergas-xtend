@@ -150,6 +150,39 @@ To import it:
 
 Based on the work by [DSchoutsen](https://github.com/DSchoutsen/HA_connection_Xtend).
 
+## Troubleshooting
+
+### Integration is unavailable after a while
+
+The Xtend access point may disconnect Wi-Fi clients due to inactivity. If this happens, increase the scan interval to 120 s or less (**Settings → Integrations → Intergas Xtend → Configure**) and ensure your Home Assistant Wi-Fi adapter stays connected.
+
+### Sensors show "Unavailable"
+
+If individual sensors show as unavailable, they typically indicate fields that the Xtend hardware does not support in your configuration (for example, Xtore sensors without a connected Xtore tank). This is expected behaviour.
+
+### Diagnostics
+
+To help diagnose issues, download the integration diagnostics:
+
+1. Go to **Settings → Devices & Services → Intergas Xtend**
+2. Click the three-dot menu (⋮) on the integration card
+3. Select **Download diagnostics**
+
+The file contains the last known sensor values and coordinator status — useful when reporting a bug.
+
+## Supported hardware
+
+| Device              | Supported                                                  |
+| ------------------- | ---------------------------------------------------------- |
+| Intergas Xtend      | ✅                                                         |
+| Intergas Xtore tank | ✅ (optional, sensors show unavailable when not connected) |
+
+## Known limitations
+
+- The climate entity is **read-only**. Setting the target temperature is not supported; use your room thermostat for that.
+- The Xtend Wi-Fi access point has a limited number of simultaneous clients. Do not connect additional devices to the Xtend network.
+- The integration polls the Xtend on a configurable interval (default 120 s, range 30–300 s). Real-time push updates are not supported.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

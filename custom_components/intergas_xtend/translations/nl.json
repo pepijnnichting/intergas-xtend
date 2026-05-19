@@ -12,6 +12,18 @@
           "host": "IP-adres van de Xtend (standaard: 10.20.30.1)",
           "port": "HTTP-poort van de Xtend (standaard: 80)"
         }
+      },
+      "reconfigure": {
+        "title": "Intergas Xtend herconfigureren",
+        "description": "Werk het IP-adres of de poort van dit Xtend-apparaat bij.",
+        "data": {
+          "host": "IP-adres",
+          "port": "Poort"
+        },
+        "data_description": {
+          "host": "IP-adres van de Xtend (standaard: 10.20.30.1)",
+          "port": "HTTP-poort van de Xtend (standaard: 80)"
+        }
       }
     },
     "error": {
@@ -20,7 +32,8 @@
       "unknown": "Onverwachte fout"
     },
     "abort": {
-      "already_configured": "Dit Xtend-apparaat is al geconfigureerd"
+      "already_configured": "Dit Xtend-apparaat is al geconfigureerd",
+      "reconfigure_successful": "Herconfiguratie geslaagd"
     }
   },
   "options": {
@@ -36,9 +49,41 @@
       }
     }
   },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Kan geen verbinding maken met de Intergas Xtend op {host}:{port}"
+    }
+  },
   "entity": {
     "sensor": {
+      "room_temperature": {"name": "Kamertemperatuur"},
+      "outdoor_temperature": {"name": "Buitentemperatuur"},
+      "heating_supply_temperature": {"name": "Aanvoertemperatuur CV"},
+      "heating_return_temperature": {"name": "Retourtemperatuur CV"},
+      "hot_water_temperature": {"name": "Warmwatertemperatuur"},
+      "temperature_setpoint": {"name": "Temperatuurinstelling"},
+      "requested_temperature": {"name": "Gevraagde circuittemperatuur"},
+      "delta_t": {"name": "Delta T"},
+      "water_pressure": {"name": "Waterdruk"},
+      "flow_rate": {"name": "Doorstroming"},
+      "hp_thermal_power": {"name": "Thermisch vermogen warmtepomp"},
+      "boiler_thermal_power": {"name": "Thermisch vermogen ketel"},
+      "electric_power": {"name": "Elektrisch vermogen"},
+      "cop": {"name": "COP"},
+      "thermal_energy_heating": {"name": "Thermische energie verwarming"},
+      "electric_energy_heating": {"name": "Elektrische energie verwarming"},
+      "thermal_energy_boiler": {"name": "Thermische energie ketel"},
+      "thermal_energy_dhw": {"name": "Thermische energie warm water"},
+      "thermal_energy_cooling": {"name": "Thermische energie koeling"},
+      "tank_hot_water_temperature": {"name": "Boilertemperatuur"},
+      "dhw_preheat_temperature": {"name": "Voorverwarmtemperatuur warm water"},
+      "cold_water_temperature": {"name": "Koudwatertemperatuur"},
+      "dhw_flow_rate": {"name": "Warmwaterdebiet"},
+      "dhw_pump_speed": {"name": "Warmwaterpompsnelheid"},
+      "dhw_thermal_power": {"name": "Thermisch vermogen warm water"},
+      "electric_energy_dhw": {"name": "Elektrische energie warm water"},
       "system_status": {
+        "name": "Systeemstatus",
         "state": {
           "monitor_lockout": "Monitor Vergrendeld",
           "pump_venting": "Pomp Ontluchten",
@@ -57,6 +102,7 @@
         }
       },
       "heatpump_mode": {
+        "name": "Warmtepompmodus",
         "state": {
           "hot_water": "Warm Water",
           "heating": "Verwarming",
@@ -65,7 +111,24 @@
           "off": "Uit",
           "undefined": "Onbekend"
         }
-      }
+      },
+      "boiler_modulation": {"name": "Ketelmodulatie"},
+      "error_code": {"name": "Fout"},
+      "notification_code": {"name": "Melding"},
+      "heating_hours": {"name": "Verwarmingsuren"},
+      "cooling_hours": {"name": "Koelingsuren"},
+      "dhw_hours": {"name": "Warmwateruren"},
+      "software_version": {"name": "Softwareversie"}
+    },
+    "binary_sensor": {
+      "flame": {"name": "Vlam"},
+      "heating": {"name": "Verwarming"},
+      "tap_water": {"name": "Tapwater"},
+      "pump": {"name": "Pomp"},
+      "heatpump_active": {"name": "Warmtepomp Actief"}
+    },
+    "climate": {
+      "thermostat": {"name": "Thermostaat"}
     }
   }
 }

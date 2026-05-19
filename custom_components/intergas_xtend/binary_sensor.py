@@ -43,40 +43,35 @@ class IntergasXtendBinarySensorEntityDescription(BinarySensorEntityDescription):
 BINARY_SENSOR_DESCRIPTIONS: tuple[IntergasXtendBinarySensorEntityDescription, ...] = (
     IntergasXtendBinarySensorEntityDescription(
         key=FIELD_BURNER_STATUS,
-        name="Flame",
+        translation_key="flame",
         device_class=BinarySensorDeviceClass.HEAT,
-        icon="mdi:fire",
         # Burner status is a flag byte; any non-zero value means burner is active
         is_on_fn=lambda data: bool(data.get(FIELD_BURNER_STATUS, 0)),
     ),
     IntergasXtendBinarySensorEntityDescription(
         key=f"{FIELD_SYSTEM_STATUS}_heating",
-        name="Heating",
+        translation_key="heating",
         device_class=BinarySensorDeviceClass.RUNNING,
-        icon="mdi:radiator",
         # System status 5=Roomheating Comfort, 6=Roomheating Eco, 9=Floor heating
         is_on_fn=lambda data: data.get(FIELD_SYSTEM_STATUS) in SYSTEM_STATUS_HEATING,
     ),
     IntergasXtendBinarySensorEntityDescription(
         key=f"{FIELD_SYSTEM_STATUS}_tapwater",
-        name="Tap Water",
+        translation_key="tap_water",
         device_class=BinarySensorDeviceClass.RUNNING,
-        icon="mdi:water",
         # System status 4=DHW, 8=DHW Heatexchanger
         is_on_fn=lambda data: data.get(FIELD_SYSTEM_STATUS) in SYSTEM_STATUS_TAPWATER,
     ),
     IntergasXtendBinarySensorEntityDescription(
         key=FIELD_PUMP_SPEED,
-        name="Pump",
+        translation_key="pump",
         device_class=BinarySensorDeviceClass.RUNNING,
-        icon="mdi:water-pump",
         is_on_fn=lambda data: (data.get(FIELD_PUMP_SPEED) or 0) > 0,
     ),
     IntergasXtendBinarySensorEntityDescription(
         key=f"{FIELD_HEATPUMP_MODE}_enabled",
-        name="Heatpump Active",
+        translation_key="heatpump_active",
         device_class=BinarySensorDeviceClass.POWER,
-        icon="mdi:heat-pump",
         # Heatpump mode 254 means Off; any other value means it is active
         is_on_fn=lambda data: data.get(FIELD_HEATPUMP_MODE) not in (HEATPUMP_MODE_OFF, None),
     ),

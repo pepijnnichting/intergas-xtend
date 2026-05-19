@@ -226,5 +226,10 @@ def test_device_info():
 
 async def test_sensors_created(setup_integration, hass):
     """async_setup_entry registers exactly as many sensors as SENSOR_DESCRIPTIONS."""
-    states = hass.states.async_all("sensor")
-    assert len(states) == len(SENSOR_DESCRIPTIONS)
+    from homeassistant.helpers import entity_registry as er
+    registry = er.async_get(hass)
+    sensor_entries = [
+        e for e in er.async_entries_for_config_entry(registry, setup_integration.entry_id)
+        if e.domain == "sensor"
+    ]
+    assert len(sensor_entries) == len(SENSOR_DESCRIPTIONS)
