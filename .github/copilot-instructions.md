@@ -111,6 +111,42 @@ The Xtore hot water tank is optional. Its fields return `32767` when not connect
 
 ---
 
+## Quality Scale — Bronze & Silver (required)
+
+All code must comply with the **HA Integration Quality Scale** Bronze and Silver tiers.
+Every change must keep the integration passing both levels.
+
+### Bronze requirements (all met)
+
+- `config_flow` with unique ID and `_abort_if_unique_id_configured()` outside `try/except`
+- `DataUpdateCoordinator` with `always_update=False`
+- `entry.runtime_data` — never `hass.data[DOMAIN]`
+- `async_config_entry_first_refresh()` → `ConfigEntryNotReady` on first failure
+- `OptionsFlowWithReload` — no `add_update_listener`
+- `has_entity_name = True` on all entities
+- Typed `DeviceInfo(...)` — never a raw `dict`
+- `suggested_display_precision` on all measurement sensors
+- `EntityCategory.DIAGNOSTIC` on diagnostic sensors
+- `strings.json` + `translations/en.json` + `translations/nl.json` in sync
+
+### Silver requirements (all met)
+
+- `PARALLEL_UPDATES = 0` on every coordinator-based platform (`sensor.py`, `binary_sensor.py`, `climate.py`)
+- **Test coverage ≥ 95%** — run `pytest --cov=custom_components/intergas_xtend`
+- `log-when-unavailable` — handled automatically by `DataUpdateCoordinator`
+- `reauthentication-flow` — EXEMPT (no authentication required)
+
+### Testing rules
+
+- All new code paths must have matching tests in `tests/`.
+- Tests use `pytest-homeassistant-custom-component`; `asyncio_mode = auto`.
+- `conftest.py` must keep `auto_enable_custom_integrations` autouse fixture.
+- Use `MockConfigEntry` + `patch.object(IntergasXtendApi, "get_data", ...)` for integration tests.
+- Use direct entity instantiation with a `MagicMock` coordinator for unit tests.
+- Coverage must stay ≥ 95% after every change.
+
+---
+
 ## Manifest
 
 ```json
