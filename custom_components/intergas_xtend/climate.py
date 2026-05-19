@@ -27,6 +27,9 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Coordinator handles all data updates centrally
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: IntergasXtendConfigEntry, async_add_entities: AddEntitiesCallback
@@ -39,6 +42,8 @@ async def async_setup_entry(
 class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
     """Representation of an Intergas Xtend thermostat (read-only)."""
 
+    _attr_has_entity_name = True
+    _attr_translation_key = "thermostat"
     _attr_hvac_modes = [HVACMode.HEAT, HVACMode.COOL]
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
 
@@ -47,7 +52,6 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         super().__init__(coordinator)
         self._entry_id = entry_id
         self._attr_unique_id = f"{entry_id}_thermostat"
-        self._attr_name = "Thermostat"
 
     @property
     def device_info(self) -> DeviceInfo:

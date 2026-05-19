@@ -1,0 +1,27 @@
+{
+  "entity": {
+    "sensor": {
+      "room_temperature": {"default": "mdi:home-thermometer"},
+      "requested_temperature": {"default": "mdi:thermometer-auto"},
+      "delta_t": {"default": "mdi:thermometer-plus"},
+      "tank_hot_water_temperature": {"default": "mdi:water-boiler"},
+      "dhw_preheat_temperature": {"default": "mdi:water-thermometer"},
+      "cold_water_temperature": {"default": "mdi:water-thermometer-outline"},
+      "dhw_pump_speed": {"default": "mdi:pump"},
+      "cop": {"default": "mdi:gauge"},
+      "system_status": {"default": "mdi:information"},
+      "heatpump_mode": {"default": "mdi:heat-pump"},
+      "boiler_modulation": {"default": "mdi:percent"},
+      "error_code": {"default": "mdi:alert-circle-outline"},
+      "notification_code": {"default": "mdi:bell-outline"},
+      "software_version": {"default": "mdi:chip"}
+    },
+    "binary_sensor": {
+      "flame": {"default": "mdi:fire"},
+      "heating": {"default": "mdi:radiator"},
+      "tap_water": {"default": "mdi:water"},
+      "pump": {"default": "mdi:water-pump"},
+      "heatpump_active": {"default": "mdi:heat-pump"}
+    }
+  }
+}

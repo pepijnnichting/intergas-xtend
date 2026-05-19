@@ -68,6 +68,9 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Coordinator handles all data updates centrally
+PARALLEL_UPDATES = 0
+
 # ---------------------------------------------------------------------------
 # Enum → human-readable string mappings
 # ---------------------------------------------------------------------------
@@ -194,7 +197,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     # --- Temperatures -------------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_ROOM_TEMP,
-        name="Room Temperature",
+        translation_key="room_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -203,7 +206,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_OUTDOOR_TEMP,
-        name="Outdoor Temperature",
+        translation_key="outdoor_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -212,7 +215,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HP_SUPPLY_TEMP,
-        name="Heating Supply Temperature",
+        translation_key="heating_supply_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -221,7 +224,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HP_RETURN_TEMP,
-        name="Heating Return Temperature",
+        translation_key="heating_return_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -230,7 +233,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_BOILER_DHW_TEMP,
-        name="Hot Water Temperature",
+        translation_key="hot_water_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -239,7 +242,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SETPOINT,
-        name="Temperature Setpoint",
+        translation_key="temperature_setpoint",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -248,28 +251,26 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_REQUESTED_TEMP,
-        name="Requested Circuit Temperature",
+        translation_key="requested_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:thermometer-auto",
         value_fn=lambda data: _temp(data, FIELD_REQUESTED_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
         key="delta_t",
-        name="Delta T",
+        translation_key="delta_t",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:thermometer-plus",
         value_fn=_delta_t,
     ),
     # --- Pressure / Flow ----------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_PRESSURE,
-        name="Water Pressure",
+        translation_key="water_pressure",
         native_unit_of_measurement=UnitOfPressure.BAR,
         device_class=SensorDeviceClass.PRESSURE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -278,7 +279,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_FLOW_RATE,
-        name="Flow Rate",
+        translation_key="flow_rate",
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -288,7 +289,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     # --- Power --------------------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_HP_POWER_THERMAL,
-        name="Heat Pump Thermal Power",
+        translation_key="hp_thermal_power",
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
@@ -297,7 +298,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_BOILER_POWER_THERMAL,
-        name="Boiler Thermal Power",
+        translation_key="boiler_thermal_power",
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
@@ -306,7 +307,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_POWER_ELECTRIC,
-        name="Electric Power",
+        translation_key="electric_power",
         native_unit_of_measurement=UnitOfPower.WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
@@ -315,10 +316,9 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_COP,
-        name="COP",
+        translation_key="cop",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:gauge",
         value_fn=lambda data: round(data[FIELD_COP] * 0.1, 1)
         if data.get(FIELD_COP) is not None
         else None,
@@ -326,7 +326,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     # --- Energy totals ------------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_THERMAL_HEATING,
-        name="Thermal Energy Heating",
+        translation_key="thermal_energy_heating",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -334,7 +334,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_ELECTRIC_HEATING,
-        name="Electric Energy Heating",
+        translation_key="electric_energy_heating",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -342,7 +342,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_THERMAL_BOILER,
-        name="Thermal Energy Boiler",
+        translation_key="thermal_energy_boiler",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -350,7 +350,7 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_THERMAL_DHW,
-        name="Thermal Energy Hot Water",
+        translation_key="thermal_energy_dhw",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -358,153 +358,155 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_THERMAL_COOLING,
-        name="Thermal Energy Cooling",
+        translation_key="thermal_energy_cooling",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
         value_fn=lambda data: data.get(FIELD_ENERGY_THERMAL_COOLING),
     ),
-    # --- Xtore domestic hot water tank (optional) ---------------------------
+    # --- Xtore domestic hot water tank (optional — disabled by default) -----
     # All fields return 32767 (unavailable) when the Xtore is not connected.
     IntergasXtendSensorEntityDescription(
         key=FIELD_XTORE_HOT_TEMP,
-        name="Tank Hot Water Temperature",
+        translation_key="tank_hot_water_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:water-boiler",
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _temp(data, FIELD_XTORE_HOT_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_PREHEAT_TEMP,
-        name="Hot Water Preheat Temperature",
+        translation_key="dhw_preheat_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:water-thermometer",
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _temp(data, FIELD_DHW_PREHEAT_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_COLD_TEMP,
-        name="Cold Water Temperature",
+        translation_key="cold_water_temperature",
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         device_class=SensorDeviceClass.TEMPERATURE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
-        icon="mdi:water-thermometer-outline",
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _temp(data, FIELD_DHW_COLD_TEMP),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_FLOW_RATE,
-        name="Hot Water Flow Rate",
+        translation_key="dhw_flow_rate",
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _int16(data, FIELD_DHW_FLOW_RATE, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_PUMP_SPEED,
-        name="Hot Water Pump Speed",
+        translation_key="dhw_pump_speed",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
-        icon="mdi:pump",
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _int16(data, FIELD_DHW_PUMP_SPEED, 0.01),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_POWER_THERMAL,
-        name="Hot Water Thermal Power",
+        translation_key="dhw_thermal_power",
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         device_class=SensorDeviceClass.POWER,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=2,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _int16(data, FIELD_DHW_POWER_THERMAL, 0.001),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_ENERGY_ELECTRIC_DHW,
-        name="Electric Energy Hot Water",
+        translation_key="electric_energy_dhw",
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_ENERGY_ELECTRIC_DHW),
     ),
-    # --- Status (decoded to human-readable text) ----------------------------
+    # --- Status / mode enums ------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_SYSTEM_STATUS,
-        name="System Status",
-        device_class=SensorDeviceClass.ENUM,
         translation_key="system_status",
+        device_class=SensorDeviceClass.ENUM,
         options=list(_SYSTEM_STATUS.values()),
-        icon="mdi:information",
         value_fn=lambda data: _decode_enum(data, FIELD_SYSTEM_STATUS, _SYSTEM_STATUS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HEATPUMP_MODE,
-        name="Heat Pump Mode",
-        device_class=SensorDeviceClass.ENUM,
         translation_key="heatpump_mode",
+        device_class=SensorDeviceClass.ENUM,
         options=list(_HEATPUMP_MODE.values()),
-        icon="mdi:heat-pump",
         value_fn=lambda data: _decode_enum(data, FIELD_HEATPUMP_MODE, _HEATPUMP_MODE),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_MODULATION,
-        name="Boiler Modulation",
+        translation_key="boiler_modulation",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        icon="mdi:percent",
+        suggested_display_precision=0,
         value_fn=lambda data: _int16(data, FIELD_MODULATION, 0.01),
     ),
-    # --- Diagnostics --------------------------------------------------------
+    # --- Diagnostics (disabled by default) ----------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_ERROR_CODE,
-        name="Error",
-        icon="mdi:alert-circle-outline",
+        translation_key="error_code",
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _decode(data, FIELD_ERROR_CODE, _ERROR_CODES),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_NOTIFICATION_CODE,
-        name="Notification",
-        icon="mdi:bell-outline",
+        translation_key="notification_code",
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: _decode(data, FIELD_NOTIFICATION_CODE, _NOTIFICATION_CODES),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_HEATING_HOURS,
-        name="Heating Hours",
+        translation_key="heating_hours",
         native_unit_of_measurement=UnitOfTime.HOURS,
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.TOTAL_INCREASING,
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_HEATING_HOURS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_COOLING_HOURS,
-        name="Cooling Hours",
+        translation_key="cooling_hours",
         native_unit_of_measurement=UnitOfTime.HOURS,
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.TOTAL_INCREASING,
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_COOLING_HOURS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_DHW_HOURS,
-        name="Hot Water Hours",
+        translation_key="dhw_hours",
         native_unit_of_measurement=UnitOfTime.HOURS,
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.TOTAL_INCREASING,
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_DHW_HOURS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SOFTWARE_VERSION,
-        name="Software Version",
-        icon="mdi:chip",
+        translation_key="software_version",
         entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_SOFTWARE_VERSION),
     ),
 )
@@ -519,6 +521,7 @@ async def async_setup_entry(
         IntergasXtendSensor(coordinator, entry.entry_id, description)
         for description in SENSOR_DESCRIPTIONS
     )
+
 
 
 class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
