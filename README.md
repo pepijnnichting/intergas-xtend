@@ -61,6 +61,19 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
    - Save — the IP range `10.20.30.0/24` must not overlap with your home LAN
 3. The Xtend is always reachable at **10.20.30.1** on this network.
 
+> **Using Home Assistant OS or Supervised without a UI network manager?** You can connect via the terminal instead:
+> ```bash
+> # List available Wi-Fi networks
+> nmcli device wifi list
+>
+> # Connect to the Xtend access point
+> nmcli device wifi connect "Xtend_xxxxxxxxxx" password "YourPassword"
+>
+> # Verify the connection is active
+> nmcli connection show --active
+> ```
+> Replace `Xtend_xxxxxxxxxx` with the actual network name and use the password printed on the Xtend unit.
+
 ## Installation
 
 ### HACS (recommended)
@@ -117,17 +130,9 @@ A pre-built Lovelace dashboard is included in [`dashboard.yaml`](dashboard.yaml)
 
 To import it:
 
-1. Copy the contents of [`dashboard.yaml`](https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/dashboard.yaml)
-2. Click the button below to open the dashboard editor in Home Assistant:
-
-<p>
-  <a href="https://my.home-assistant.io/redirect/lovelace_dashboard/">
-    <img src="https://my.home-assistant.io/badges/lovelace_dashboard.svg" alt="Open your Home Assistant dashboard" />
-  </a>
-</p>
-
-3. Click the pencil icon → three-dot menu → **Edit in YAML**
-4. Paste the contents and click **Save**
+1. Open [`dashboard.yaml`](https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/dashboard.yaml) and copy the contents
+2. In Home Assistant, go to **Overview → pencil icon → three-dot menu → Edit in YAML**
+3. Replace the contents and click **Save**
 
 > Entity IDs in the dashboard are based on the default device name "Intergas Xtend". If yours differ, find the correct IDs at **Settings → Devices & Services → Intergas Xtend**.
 
