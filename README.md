@@ -98,6 +98,14 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
 3. Follow the on-screen instructions — the config flow will walk you through the Wi-Fi setup if you haven't done it yet
 4. The default IP (`10.20.30.1`) and port (`80`) are correct for all Xtend units
 
+## Removal
+
+1. Go to **Settings → Integrations**
+2. Find **Intergas Xtend** and click on it
+3. Click the three-dot menu (⋮) and select **Delete**
+4. Restart Home Assistant
+5. Optionally disconnect from the Xtend Wi-Fi under **Settings → System → Network**
+
 ## Usage
 
 After setup you'll have access to the following entities:

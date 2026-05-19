@@ -71,8 +71,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: IntergasXtendConfigEntry
 async def async_unload_entry(hass: HomeAssistant, entry: IntergasXtendConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-
     if unload_ok:
-        await entry.runtime_data.api.close()
-
+        data: IntergasXtendData | None = getattr(entry, "runtime_data", None)
+        if data is not None:
+            await data.api.close()
     return unload_ok
