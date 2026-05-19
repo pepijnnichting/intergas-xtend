@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/custom_components/intergas_xtend/icon.png" alt="Intergas Xtend" width="160" />
+  <img src="https://raw.githubusercontent.com/pepijnnichting/intergas-xtend/main/custom_components/intergas_xtend/brand/icon.png" alt="Intergas Xtend" width="160" />
 </p>
 
 <h1 align="center">Intergas Xtend — Home Assistant Integration</h1>
