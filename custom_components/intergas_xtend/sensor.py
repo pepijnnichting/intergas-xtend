@@ -68,6 +68,9 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Coordinator handles all data updates centrally
+PARALLEL_UPDATES = 0
+
 # ---------------------------------------------------------------------------
 # Enum → human-readable string mappings
 # ---------------------------------------------------------------------------

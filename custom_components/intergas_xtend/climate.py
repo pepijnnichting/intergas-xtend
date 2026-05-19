@@ -27,6 +27,9 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Coordinator handles all data updates centrally
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: IntergasXtendConfigEntry, async_add_entities: AddEntitiesCallback
