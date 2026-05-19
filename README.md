@@ -62,6 +62,7 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
 3. The Xtend is always reachable at **10.20.30.1** on this network.
 
 > **Using Home Assistant OS or Supervised without a UI network manager?** You can connect via the terminal instead:
+>
 > ```bash
 > # List available Wi-Fi networks
 > nmcli device wifi list
@@ -72,6 +73,7 @@ The Xtend does not connect to your home network. Instead, it acts as its own Wi-
 > # Verify the connection is active
 > nmcli connection show --active
 > ```
+>
 > Replace `Xtend_xxxxxxxxxx` with the actual network name and use the password printed on the Xtend unit.
 
 ## Installation
