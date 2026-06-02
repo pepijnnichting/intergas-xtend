@@ -42,11 +42,22 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 ## Requirements
 
 - An Intergas Xtend hybrid heat pump
-- A Home Assistant server with both an **Ethernet** port (for your home network) and a **Wi-Fi** adapter (to connect to the Xtend)
+- Home Assistant host networking:
+  - **Direct mode (without proxy):** Ethernet + Wi-Fi adapter (Wi-Fi connects to the Xtend AP)
+  - **Proxy mode (with companion proxy):** only a normal network connection to the Raspberry Pi proxy (Wi-Fi on Home Assistant is not required)
 
 ## How it works
 
 The Xtend does not connect to your home network. Instead, it acts as its own Wi-Fi access point. Your Home Assistant server uses its Wi-Fi adapter to connect directly to the Xtend network, while staying on your home network and internet via Ethernet.
+
+## Optional companion proxy
+
+If your Home Assistant host cannot stay connected to the Xtend Wi-Fi directly, you can place a Raspberry Pi in between and run the companion proxy:
+
+- Intergas Xtend Proxy (GitHub): https://github.com/pepijnnichting/intergas-xtend-proxy
+
+With this setup, Home Assistant connects to the Raspberry Pi IP instead of directly to `10.20.30.1`.
+Home Assistant only needs regular network access to the Raspberry Pi in this mode.
 
 ## Network setup
 
