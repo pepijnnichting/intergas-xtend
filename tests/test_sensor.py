@@ -5,8 +5,11 @@ import pytest
 
 from custom_components.intergas_xtend.const import (
     FIELD_BURNER_STATUS,
+    FIELD_BOILER_DHW_SETPOINT,
     FIELD_COP,
     FIELD_DHW_FLOW_RATE,
+    FIELD_DHW_GAS_METER,
+    FIELD_DHW_STARTS,
     FIELD_ERROR_CODE,
     FIELD_HP_POWER_THERMAL,
     FIELD_HP_RETURN_TEMP,
@@ -206,6 +209,21 @@ def test_native_value_modulation():
     # FIELD_MODULATION: int16 × 0.01 → raw 7000 = 70.00%
     sensor = _make_sensor(_desc(FIELD_MODULATION), {FIELD_MODULATION: 7000})
     assert sensor.native_value == 70.0
+
+
+def test_native_value_hot_water_setpoint():
+    sensor = _make_sensor(_desc(FIELD_BOILER_DHW_SETPOINT), {FIELD_BOILER_DHW_SETPOINT: 5000})
+    assert sensor.native_value == 50.0
+
+
+def test_native_value_hot_water_gas_meter():
+    sensor = _make_sensor(_desc(FIELD_DHW_GAS_METER), {FIELD_DHW_GAS_METER: 2088})
+    assert sensor.native_value == 0.2088
+
+
+def test_native_value_hot_water_starts():
+    sensor = _make_sensor(_desc(FIELD_DHW_STARTS), {FIELD_DHW_STARTS: 29})
+    assert sensor.native_value == 29
 
 
 # ---------------------------------------------------------------------------

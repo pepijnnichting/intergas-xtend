@@ -17,6 +17,7 @@ from homeassistant.const import (
     UnitOfPressure,
     UnitOfTemperature,
     UnitOfTime,
+    UnitOfVolume,
     UnitOfVolumeFlowRate,
 )
 from homeassistant.core import HomeAssistant
@@ -35,6 +36,7 @@ from .const import (
     FIELD_HP_SUPPLY_TEMP,
     FIELD_HP_RETURN_TEMP,
     FIELD_BOILER_DHW_TEMP,
+    FIELD_BOILER_DHW_SETPOINT,
     FIELD_XTORE_HOT_TEMP,
     FIELD_SETPOINT,
     FIELD_REQUESTED_TEMP,
@@ -50,6 +52,7 @@ from .const import (
     FIELD_ENERGY_THERMAL_DHW,
     FIELD_ENERGY_THERMAL_COOLING,
     FIELD_ENERGY_ELECTRIC_DHW,
+    FIELD_DHW_GAS_METER,
     FIELD_DHW_COLD_TEMP,
     FIELD_DHW_PREHEAT_TEMP,
     FIELD_DHW_FLOW_RATE,
@@ -63,6 +66,7 @@ from .const import (
     FIELD_HEATING_HOURS,
     FIELD_COOLING_HOURS,
     FIELD_DHW_HOURS,
+    FIELD_DHW_STARTS,
     FIELD_SOFTWARE_VERSION,
 )
 
@@ -157,6 +161,14 @@ def _int16(data: dict, key: str, factor: float) -> float | None:
     return round(raw * factor, 2)
 
 
+def _scale(data: dict, key: str, factor: float, precision: int = 2) -> float | None:
+    """Scale a raw value without applying the int16 unavailable sentinel logic."""
+    raw = data.get(key)
+    if raw is None:
+        return None
+    return round(raw * factor, precision)
+
+
 def _decode(data: dict, key: str, mapping: dict) -> str | None:
     """Decode an integer enum field to a human-readable string."""
     raw = data.get(key)
@@ -239,6 +251,15 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         value_fn=lambda data: _temp(data, FIELD_BOILER_DHW_TEMP),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_BOILER_DHW_SETPOINT,
+        translation_key="hot_water_setpoint",
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        value_fn=lambda data: _temp(data, FIELD_BOILER_DHW_SETPOINT),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SETPOINT,
@@ -434,6 +455,15 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_ENERGY_ELECTRIC_DHW),
     ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_DHW_GAS_METER,
+        translation_key="hot_water_gas_meter",
+        native_unit_of_measurement=UnitOfVolume.CUBIC_METERS,
+        device_class=SensorDeviceClass.GAS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=4,
+        value_fn=lambda data: _scale(data, FIELD_DHW_GAS_METER, 0.0001, 4),
+    ),
     # --- Status / mode enums ------------------------------------------------
     IntergasXtendSensorEntityDescription(
         key=FIELD_SYSTEM_STATUS,
@@ -501,6 +531,14 @@ SENSOR_DESCRIPTIONS: tuple[IntergasXtendSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         value_fn=lambda data: data.get(FIELD_DHW_HOURS),
+    ),
+    IntergasXtendSensorEntityDescription(
+        key=FIELD_DHW_STARTS,
+        translation_key="hot_water_starts",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda data: data.get(FIELD_DHW_STARTS),
     ),
     IntergasXtendSensorEntityDescription(
         key=FIELD_SOFTWARE_VERSION,

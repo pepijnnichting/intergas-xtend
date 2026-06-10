@@ -61,6 +61,7 @@
       "heating_supply_temperature": {"name": "Aanvoertemperatuur CV"},
       "heating_return_temperature": {"name": "Retourtemperatuur CV"},
       "hot_water_temperature": {"name": "Warmwatertemperatuur"},
+      "hot_water_setpoint": {"name": "Warmwaterinstelling"},
       "temperature_setpoint": {"name": "Temperatuurinstelling"},
       "requested_temperature": {"name": "Gevraagde circuittemperatuur"},
       "delta_t": {"name": "Delta T"},
@@ -82,6 +83,7 @@
       "dhw_pump_speed": {"name": "Warmwaterpompsnelheid"},
       "dhw_thermal_power": {"name": "Thermisch vermogen warm water"},
       "electric_energy_dhw": {"name": "Elektrische energie warm water"},
+      "hot_water_gas_meter": {"name": "Gasvolume warm water"},
       "system_status": {
         "name": "Systeemstatus",
         "state": {
@@ -118,6 +120,7 @@
       "heating_hours": {"name": "Verwarmingsuren"},
       "cooling_hours": {"name": "Koelingsuren"},
       "dhw_hours": {"name": "Warmwateruren"},
+      "hot_water_starts": {"name": "Warmwaterstarts"},
       "software_version": {"name": "Softwareversie"}
     },
     "binary_sensor": {

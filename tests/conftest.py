@@ -23,6 +23,7 @@ FAKE_DATA = {
     "62e7": 4500,   # FIELD_HP_SUPPLY_TEMP   45.00 °C
     "6280": 4000,   # FIELD_HP_RETURN_TEMP   40.00 °C
     "8edb": 6000,   # FIELD_BOILER_DHW_TEMP  60.00 °C
+    "8ecb": 5000,   # FIELD_BOILER_DHW_SETPOINT 50.00 °C
     "7921": 2100,   # FIELD_SETPOINT         21.00 °C
     "7767": 4500,   # FIELD_REQUESTED_TEMP   45.00 °C
     # Xtore temperatures
@@ -47,6 +48,7 @@ FAKE_DATA = {
     "6339": 200,    # FIELD_ENERGY_THERMAL_DHW
     "63e4": 0,      # FIELD_ENERGY_THERMAL_COOLING
     "6358": 100,    # FIELD_ENERGY_ELECTRIC_DHW
+    "71aa": 2088,   # FIELD_DHW_GAS_METER   0.2088 m³
     # Pump / modulation
     "622b": 5000,   # FIELD_DHW_PUMP_SPEED  50.00 %
     "84d1": 7000,   # FIELD_MODULATION      70.00 %
@@ -61,6 +63,7 @@ FAKE_DATA = {
     "6ac5": 1200,   # FIELD_HEATING_HOURS
     "6a78": 50,     # FIELD_COOLING_HOURS
     "6a6c": 300,    # FIELD_DHW_HOURS
+    "6a8d": 29,     # FIELD_DHW_STARTS
     "47e0": 123,    # FIELD_SOFTWARE_VERSION
 }
 

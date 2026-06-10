@@ -61,6 +61,7 @@
       "heating_supply_temperature": {"name": "Heating Supply Temperature"},
       "heating_return_temperature": {"name": "Heating Return Temperature"},
       "hot_water_temperature": {"name": "Hot Water Temperature"},
+      "hot_water_setpoint": {"name": "Hot Water Setpoint"},
       "temperature_setpoint": {"name": "Temperature Setpoint"},
       "requested_temperature": {"name": "Requested Circuit Temperature"},
       "delta_t": {"name": "Delta T"},
@@ -82,6 +83,7 @@
       "dhw_pump_speed": {"name": "Hot Water Pump Speed"},
       "dhw_thermal_power": {"name": "Hot Water Thermal Power"},
       "electric_energy_dhw": {"name": "Electric Energy Hot Water"},
+      "hot_water_gas_meter": {"name": "Gas Volume Hot Water"},
       "system_status": {
         "name": "System Status",
         "state": {
@@ -118,6 +120,7 @@
       "heating_hours": {"name": "Heating Hours"},
       "cooling_hours": {"name": "Cooling Hours"},
       "dhw_hours": {"name": "Hot Water Hours"},
+      "hot_water_starts": {"name": "Hot Water Starts"},
       "software_version": {"name": "Software Version"}
     },
     "binary_sensor": {

@@ -31,7 +31,7 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 - Room, outdoor, heating supply/return, and hot water temperatures
 - Water pressure and flow rate
 - Heat pump and boiler power (kW) and COP
-- Cumulative energy totals for heating and hot water (kWh) — integrates with the Energy Dashboard
+- Cumulative energy totals for heating and hot water (kWh), plus hot water setpoint and gas volume
 - System status and heat pump mode (human-readable)
 - Boiler modulation percentage
 - Flame, pump, heating, and hot water binary sensors
@@ -126,6 +126,8 @@ After setup you'll have access to the following entities:
 - **Climate entity:** displays current and target temperature and heating/idle state (read-only — control your setpoint via your room thermostat integration)
 
 All sensors use standard Home Assistant device classes, so energy sensors appear in the Energy Dashboard automatically.
+
+In addition to the Xtore-specific sensors below, the integration also exposes generic domestic hot water values that are commonly available across installations, such as hot water setpoint, starts, and gas volume.
 
 ### Xtore hot water tank
 
