@@ -146,6 +146,38 @@ views:
             entity: sensor.intergas_xtend_flow_rate
             name: Flow Rate
 
+      - title: Boiler & DHW Details
+        cards:
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_setpoint
+            name: DHW Setpoint
+            icon: mdi:thermometer-water
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_hot_water_flow_rate
+            name: DHW Boiler Flow
+            icon: mdi:waves-arrow-right
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_temperature
+            name: Boiler Temp
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_supply_temperature
+            name: Boiler Supply
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_return_temperature
+            name: Boiler Return
+          - type: tile
+            entity: sensor.intergas_xtend_boiler_ch_setpoint_temperature
+            name: Boiler CH Setpoint
+            icon: mdi:target
+          - type: tile
+            entity: sensor.intergas_xtend_hot_water_gas_meter
+            name: Hot Water Gas
+            icon: mdi:meter-gas
+          - type: tile
+            entity: sensor.intergas_xtend_compressor_frequency
+            name: Compressor Frequency
+            icon: mdi:sine-wave
+
       - title: Energy Totals
         cards:
           - type: tile
@@ -264,6 +296,24 @@ views:
                 name: COP
               - entity: sensor.intergas_xtend_boiler_modulation
                 name: Modulation (%)
+
+      - title: Boiler & DHW Details (24 h)
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.intergas_xtend_hot_water_setpoint
+                name: DHW Setpoint
+              - entity: sensor.intergas_xtend_boiler_temperature
+                name: Boiler Temp
+              - entity: sensor.intergas_xtend_boiler_supply_temperature
+                name: Boiler Supply
+              - entity: sensor.intergas_xtend_boiler_return_temperature
+                name: Boiler Return
+              - entity: sensor.intergas_xtend_boiler_hot_water_flow_rate
+                name: Boiler DHW Flow
+              - entity: sensor.intergas_xtend_compressor_frequency
+                name: Compressor Frequency
 
       - title: Xtore Hot Water Tank (24 h)
         cards:

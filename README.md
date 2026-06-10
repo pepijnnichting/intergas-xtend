@@ -144,6 +144,25 @@ If you have an Intergas Xtore boiler vessel connected to your Xtend, six additio
 
 When no Xtore is connected, all six sensors show as **unavailable** — they do not affect the rest of the integration.
 
+### Xtend UI field mapping (proxy validation)
+
+If you use the proxy web UI (`http://<PI_IP>:8080/`) to validate values, this quick map helps match on-screen labels to API field codes.
+
+| Xtend UI label (example) | Field code | Notes |
+| ------------------------ | ---------- | ----- |
+| Operating Mode           | `77dd`     | System status enum |
+| DHW Actual               | `8edb`     | Boiler hot water temperature |
+| DHW Setpoint             | `8ecb`     | Boiler hot water setpoint |
+| DHW preheat              | `628d`     | Xtore preheat / heat exchanger temp |
+| DHW cold                 | `6256`     | Xtore cold water inlet temp |
+| DHW flow                 | `6290`     | Xtore DHW flow rate |
+| DHW available (%)        | `622b`     | Xtore pump speed / modulation |
+| DHW thermal power        | `5092`     | Xtore DHW thermal power |
+| DHW electric energy      | `6358`     | Xtore DHW electric energy total |
+| Xtore hot                | `6269`     | Xtore hot water outlet temp |
+
+UI labels can differ slightly per firmware version. Compare trends and value ranges when matching unknown fields.
+
 ## Dashboard
 
 A pre-built Lovelace dashboard is included in [`dashboard.yaml`](dashboard.yaml). It provides two views:
