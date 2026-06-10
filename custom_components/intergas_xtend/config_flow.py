@@ -11,7 +11,17 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import DOMAIN, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SCAN_INTERVAL, CONF_HOST, CONF_PORT, CONF_SCAN_INTERVAL
+from .const import (
+    CONF_HOST,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_HOST,
+    DEFAULT_PORT,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+)
 from .intergas_api import IntergasXtendApi, ConnectionFailedError
 
 _LOGGER = logging.getLogger(__name__)
@@ -137,7 +147,10 @@ class OptionsFlowHandler(config_entries.OptionsFlowWithReload):
                 {
                     vol.Required(
                         CONF_SCAN_INTERVAL, default=current_interval
-                    ): vol.All(int, vol.Range(min=30, max=300)),
+                    ): vol.All(
+                        int,
+                        vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                    ),
                 }
             ),
         )

@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import InvalidData
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.intergas_xtend.const import (
@@ -12,6 +13,7 @@ from custom_components.intergas_xtend.const import (
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    MIN_SCAN_INTERVAL,
 )
 from custom_components.intergas_xtend.intergas_api import ConnectionFailedError
 
@@ -199,6 +201,48 @@ async def test_options_flow_saves_interval(hass: HomeAssistant, mock_api_login) 
 
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert entry.options[CONF_SCAN_INTERVAL] == 60
+
+
+async def test_options_flow_accepts_fast_interval(
+    hass: HomeAssistant, mock_api_login
+) -> None:
+    """Test that the minimum supported fast polling interval can be saved."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    await hass.config_entries.flow.async_configure(result["flow_id"], VALID_INPUT)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+
+    with patch.object(hass.config_entries, "async_schedule_reload"):
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {CONF_SCAN_INTERVAL: MIN_SCAN_INTERVAL}
+        )
+
+    assert result["type"] == FlowResultType.CREATE_ENTRY
+    assert entry.options[CONF_SCAN_INTERVAL] == MIN_SCAN_INTERVAL
+
+
+async def test_options_flow_rejects_interval_below_minimum(
+    hass: HomeAssistant, mock_api_login
+) -> None:
+    """Test that a scan interval below the minimum is rejected."""
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    await hass.config_entries.flow.async_configure(result["flow_id"], VALID_INPUT)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    with pytest.raises(InvalidData):
+        await hass.config_entries.options.async_configure(
+            result["flow_id"], {CONF_SCAN_INTERVAL: MIN_SCAN_INTERVAL - 1}
+        )
+
+    assert CONF_SCAN_INTERVAL not in entry.options
 
 
 # ---------------------------------------------------------------------------

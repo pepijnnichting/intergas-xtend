@@ -4,13 +4,24 @@ from unittest.mock import MagicMock
 import pytest
 
 from custom_components.intergas_xtend.const import (
+    FIELD_BOILER_CH_SETPOINT,
+    FIELD_BOILER_DHW_FLOW_RATE,
     FIELD_BURNER_STATUS,
+    FIELD_BOILER_DHW_SETPOINT,
+    FIELD_BOILER_RETURN_TEMP,
+    FIELD_BOILER_SUPPLY_TEMP,
+    FIELD_BOILER_TEMP,
     FIELD_COP,
+    FIELD_COMPRESSOR_FREQUENCY,
+    FIELD_DHW_GAS_METER,
+    FIELD_DHW_STARTS,
     FIELD_DHW_FLOW_RATE,
     FIELD_ERROR_CODE,
+    FIELD_HP_DISCHARGE_PRESSURE,
     FIELD_HP_POWER_THERMAL,
     FIELD_HP_RETURN_TEMP,
     FIELD_HP_SUPPLY_TEMP,
+    FIELD_HP_SUCTION_PRESSURE,
     FIELD_HEATPUMP_MODE,
     FIELD_MODULATION,
     FIELD_NOTIFICATION_CODE,
@@ -206,6 +217,43 @@ def test_native_value_modulation():
     # FIELD_MODULATION: int16 × 0.01 → raw 7000 = 70.00%
     sensor = _make_sensor(_desc(FIELD_MODULATION), {FIELD_MODULATION: 7000})
     assert sensor.native_value == 70.0
+
+
+def test_native_value_hot_water_setpoint():
+    sensor = _make_sensor(_desc(FIELD_BOILER_DHW_SETPOINT), {FIELD_BOILER_DHW_SETPOINT: 5000})
+    assert sensor.native_value == 50.0
+
+
+def test_native_value_hot_water_gas_meter():
+    sensor = _make_sensor(_desc(FIELD_DHW_GAS_METER), {FIELD_DHW_GAS_METER: 2088})
+    assert sensor.native_value == 0.2088
+
+
+def test_native_value_hot_water_starts():
+    sensor = _make_sensor(_desc(FIELD_DHW_STARTS), {FIELD_DHW_STARTS: 29})
+    assert sensor.native_value == 29
+
+
+def test_native_value_boiler_temperature_group():
+    assert _make_sensor(_desc(FIELD_BOILER_TEMP), {FIELD_BOILER_TEMP: 5500}).native_value == 55.0
+    assert _make_sensor(_desc(FIELD_BOILER_CH_SETPOINT), {FIELD_BOILER_CH_SETPOINT: 4500}).native_value == 45.0
+    assert _make_sensor(_desc(FIELD_BOILER_SUPPLY_TEMP), {FIELD_BOILER_SUPPLY_TEMP: 5200}).native_value == 52.0
+    assert _make_sensor(_desc(FIELD_BOILER_RETURN_TEMP), {FIELD_BOILER_RETURN_TEMP: 4700}).native_value == 47.0
+
+
+def test_native_value_boiler_dhw_flow_rate():
+    sensor = _make_sensor(_desc(FIELD_BOILER_DHW_FLOW_RATE), {FIELD_BOILER_DHW_FLOW_RATE: 600})
+    assert sensor.native_value == 6.0
+
+
+def test_native_value_heatpump_pressures():
+    assert _make_sensor(_desc(FIELD_HP_SUCTION_PRESSURE), {FIELD_HP_SUCTION_PRESSURE: 1200}).native_value == 12.0
+    assert _make_sensor(_desc(FIELD_HP_DISCHARGE_PRESSURE), {FIELD_HP_DISCHARGE_PRESSURE: 1800}).native_value == 18.0
+
+
+def test_native_value_compressor_frequency():
+    sensor = _make_sensor(_desc(FIELD_COMPRESSOR_FREQUENCY), {FIELD_COMPRESSOR_FREQUENCY: 5000})
+    assert sensor.native_value == 50.0
 
 
 # ---------------------------------------------------------------------------

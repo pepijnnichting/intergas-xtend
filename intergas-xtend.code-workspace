@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "./"
+		},
+		{
+			"path": "../intergas-xtend-proxy"
+		}
+	],
+	"settings": {}
+}

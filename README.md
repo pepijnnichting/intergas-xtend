@@ -28,10 +28,10 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 
 ## Features
 
-- Room, outdoor, heating supply/return, and hot water temperatures
-- Water pressure and flow rate
+- Room, outdoor, boiler, and heating supply/return temperatures
+- Water pressure, flow rate, compressor frequency, and additional boiler/DHW diagnostics
 - Heat pump and boiler power (kW) and COP
-- Cumulative energy totals for heating and hot water (kWh) — integrates with the Energy Dashboard
+- Cumulative energy totals for heating and hot water (kWh), plus hot water setpoint and gas volume
 - System status and heat pump mode (human-readable)
 - Boiler modulation percentage
 - Flame, pump, heating, and hot water binary sensors
@@ -42,11 +42,22 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 ## Requirements
 
 - An Intergas Xtend hybrid heat pump
-- A Home Assistant server with both an **Ethernet** port (for your home network) and a **Wi-Fi** adapter (to connect to the Xtend)
+- Home Assistant host networking:
+  - **Direct mode (without proxy):** Ethernet + Wi-Fi adapter (Wi-Fi connects to the Xtend AP)
+  - **Proxy mode (with companion proxy):** only a normal network connection to the Raspberry Pi proxy (Wi-Fi on Home Assistant is not required)
 
 ## How it works
 
 The Xtend does not connect to your home network. Instead, it acts as its own Wi-Fi access point. Your Home Assistant server uses its Wi-Fi adapter to connect directly to the Xtend network, while staying on your home network and internet via Ethernet.
+
+## Optional companion proxy
+
+If your Home Assistant host cannot stay connected to the Xtend Wi-Fi directly, you can place a Raspberry Pi in between and run the companion proxy:
+
+- Intergas Xtend Proxy (GitHub): https://github.com/pepijnnichting/intergas-xtend-proxy
+
+With this setup, Home Assistant connects to the Raspberry Pi IP instead of directly to `10.20.30.1`.
+Home Assistant only needs regular network access to the Raspberry Pi in this mode.
 
 ## Network setup
 
@@ -116,6 +127,8 @@ After setup you'll have access to the following entities:
 
 All sensors use standard Home Assistant device classes, so energy sensors appear in the Energy Dashboard automatically.
 
+In addition to the Xtore-specific sensors below, the integration also exposes generic domestic hot water values that are commonly available across installations, such as hot water setpoint, starts, and gas volume.
+
 ### Xtore hot water tank
 
 If you have an Intergas Xtore boiler vessel connected to your Xtend, six additional sensors are created automatically:
@@ -130,6 +143,25 @@ If you have an Intergas Xtore boiler vessel connected to your Xtend, six additio
 | Electric Energy Hot Water     | Cumulative electric energy for DHW (kWh)   |
 
 When no Xtore is connected, all six sensors show as **unavailable** — they do not affect the rest of the integration.
+
+### Xtend UI field mapping (proxy validation)
+
+If you use the proxy web UI (`http://<PI_IP>:8080/`) to validate values, this quick map helps match on-screen labels to API field codes.
+
+| Xtend UI label (example) | Field code | Notes                               |
+| ------------------------ | ---------- | ----------------------------------- |
+| Operating Mode           | `77dd`     | System status enum                  |
+| DHW Actual               | `8edb`     | Boiler hot water temperature        |
+| DHW Setpoint             | `8ecb`     | Boiler hot water setpoint           |
+| DHW preheat              | `628d`     | Xtore preheat / heat exchanger temp |
+| DHW cold                 | `6256`     | Xtore cold water inlet temp         |
+| DHW flow                 | `6290`     | Xtore DHW flow rate                 |
+| DHW available (%)        | `622b`     | Xtore pump speed / modulation       |
+| DHW thermal power        | `5092`     | Xtore DHW thermal power             |
+| DHW electric energy      | `6358`     | Xtore DHW electric energy total     |
+| Xtore hot                | `6269`     | Xtore hot water outlet temp         |
+
+UI labels can differ slightly per firmware version. Compare trends and value ranges when matching unknown fields.
 
 ## Dashboard
 
@@ -154,7 +186,7 @@ Based on the work by [DSchoutsen](https://github.com/DSchoutsen/HA_connection_Xt
 
 ### Integration is unavailable after a while
 
-The Xtend access point may disconnect Wi-Fi clients due to inactivity. If this happens, increase the scan interval to 120 s or less (**Settings → Integrations → Intergas Xtend → Configure**) and ensure your Home Assistant Wi-Fi adapter stays connected.
+The Xtend access point may disconnect Wi-Fi clients due to inactivity. If this happens, keep the scan interval between 5 and 120 seconds (**Settings → Integrations → Intergas Xtend → Configure**) and ensure your Home Assistant Wi-Fi adapter stays connected.
 
 ### Sensors show "Unavailable"
 
@@ -181,7 +213,7 @@ The file contains the last known sensor values and coordinator status — useful
 
 - The climate entity is **read-only**. Setting the target temperature is not supported; use your room thermostat for that.
 - The Xtend Wi-Fi access point has a limited number of simultaneous clients. Do not connect additional devices to the Xtend network.
-- The integration polls the Xtend on a configurable interval (default 120 s, range 30–300 s). Real-time push updates are not supported.
+- The integration polls the Xtend on a configurable interval (default 120 s, range 5-300 s). Real-time push updates are not supported, but 5-10 s polling works well for near-real-time dashboards.
 
 ## License
 
