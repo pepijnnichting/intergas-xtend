@@ -28,8 +28,8 @@ This integration connects directly to your Intergas Xtend hybrid heat pump over 
 
 ## Features
 
-- Room, outdoor, heating supply/return, and hot water temperatures
-- Water pressure and flow rate
+- Room, outdoor, boiler, and heating supply/return temperatures
+- Water pressure, flow rate, compressor frequency, and additional boiler/DHW diagnostics
 - Heat pump and boiler power (kW) and COP
 - Cumulative energy totals for heating and hot water (kWh), plus hot water setpoint and gas volume
 - System status and heat pump mode (human-readable)

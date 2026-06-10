@@ -30,20 +30,35 @@ FIELD_ROOM_TEMP        = "79b3"   # room temperature
 FIELD_OUTDOOR_TEMP     = "62d1"   # outdoor temperature
 FIELD_HP_SUPPLY_TEMP   = "62e7"   # heating circuit water supply
 FIELD_HP_RETURN_TEMP   = "6280"   # heating circuit water return
+FIELD_BOILER_TEMP      = "7ee6"   # boiler temperature from Xtend screen-aligned code
+FIELD_BOILER_CH_SETPOINT = "7e31"   # boiler CH setpoint temperature
+FIELD_BOILER_SUPPLY_TEMP = "625b"   # boiler CH supply temperature
+FIELD_BOILER_RETURN_TEMP = "7e81"   # boiler CH return temperature
 FIELD_BOILER_DHW_TEMP  = "8edb"   # boiler hot water temperature via OpenTherm
 FIELD_BOILER_DHW_SETPOINT = "8ecb"   # boiler hot water setpoint via OpenTherm
 FIELD_SETPOINT         = "7921"   # room thermostat setpoint
 FIELD_REQUESTED_TEMP   = "7767"   # calculated circuit target temperature
+FIELD_SUCTION_LINE_GAS_TEMP = "6505"   # suction line gas temperature
+FIELD_CONDENSOR_GAS_TEMP = "6c26"   # condensor refrigerant gas temperature
+FIELD_CONDENSOR_LIQUID_TEMP = "6ceb"   # condensor refrigerant liquid temperature
+FIELD_SUCTION_LINE_OVERHEAT_TEMP = "6cfb"   # suction line overheat temperature
+FIELD_DISCHARGE_OVERHEAT_TEMP = "6c33"   # discharge overheat temperature
+FIELD_SUBCOOLING_TEMP = "6c53"   # refrigerant subcooling temperature
+FIELD_COIL_TEMP = "65c1"   # coil temperature
 
 # Pressure / flow (int16)
 FIELD_PRESSURE         = "7ed3"   # bar, ×0.01
 FIELD_FLOW_RATE        = "629c"   # L/min, ×0.01
+FIELD_BOILER_DHW_FLOW_RATE = "8e7f"   # boiler DHW flow rate, L/min, ×0.01
+FIELD_HP_SUCTION_PRESSURE = "6579"   # heat pump suction pressure, bar, ×0.01
+FIELD_HP_DISCHARGE_PRESSURE = "65b0"   # heat pump discharge pressure, bar, ×0.01
 
 # Power (int16)
 FIELD_HP_POWER_THERMAL     = "503e"   # heat pump thermal power, kW, ×0.001
 FIELD_BOILER_POWER_THERMAL = "5088"   # gas boiler thermal power, kW, ×0.001
 FIELD_POWER_ELECTRIC       = "50f2"   # total electric power, W (×1; 0.001 kW/unit = 1 W/unit)
 FIELD_COP                  = "5041"   # current COP, uint8, ×0.1
+FIELD_COMPRESSOR_FREQUENCY = "65a7"   # compressor frequency, Hz, ×0.01
 
 # Cumulative energy (uint24, kWh, ×1 — no unavailable sentinel)
 FIELD_ENERGY_THERMAL_HEATING  = "63f0"
@@ -78,21 +93,39 @@ FIELD_HEATING_HOURS     = "6ac5"   # uint24, hours
 FIELD_COOLING_HOURS     = "6a78"   # uint24, hours
 FIELD_DHW_HOURS         = "6a6c"   # uint24, hours
 FIELD_DHW_STARTS        = "6a8d"   # uint24, starts
+FIELD_HP_POWERON_HOURS  = "71a7"   # uint16, hours
+FIELD_HP_POWER_CYCLES   = "7160"   # uint16
+FIELD_HP_COMPRESSOR_STARTS = "6a8e"   # uint24, starts
+FIELD_HP_DEFROST_CYCLES = "6a53"   # uint24, starts
+FIELD_BOILER_CH_HOURS   = "8ef9"   # uint16, hours
+FIELD_BOILER_DHW_HOURS  = "8e37"   # uint16, hours
+FIELD_BOILER_STARTS     = "8e00"   # uint16, starts
+FIELD_BOILER_FLAME_LOSS = "8e18"   # uint16, count
+FIELD_BOILER_IGNITION_FAILS = "712c"   # uint16, count
 FIELD_SOFTWARE_VERSION  = "47e0"   # bytes, version string
 
 # All fields fetched in a single API call
 ALL_FIELDS = ",".join([
     FIELD_ROOM_TEMP, FIELD_OUTDOOR_TEMP, FIELD_HP_SUPPLY_TEMP, FIELD_HP_RETURN_TEMP,
+    FIELD_BOILER_TEMP, FIELD_BOILER_CH_SETPOINT, FIELD_BOILER_SUPPLY_TEMP, FIELD_BOILER_RETURN_TEMP,
     FIELD_BOILER_DHW_TEMP, FIELD_BOILER_DHW_SETPOINT, FIELD_SETPOINT, FIELD_REQUESTED_TEMP,
+    FIELD_SUCTION_LINE_GAS_TEMP, FIELD_CONDENSOR_GAS_TEMP, FIELD_CONDENSOR_LIQUID_TEMP,
+    FIELD_SUCTION_LINE_OVERHEAT_TEMP, FIELD_DISCHARGE_OVERHEAT_TEMP, FIELD_SUBCOOLING_TEMP, FIELD_COIL_TEMP,
     FIELD_PRESSURE, FIELD_FLOW_RATE,
+    FIELD_BOILER_DHW_FLOW_RATE, FIELD_HP_SUCTION_PRESSURE, FIELD_HP_DISCHARGE_PRESSURE,
     FIELD_HP_POWER_THERMAL, FIELD_BOILER_POWER_THERMAL, FIELD_POWER_ELECTRIC, FIELD_COP,
+    FIELD_COMPRESSOR_FREQUENCY,
     FIELD_ENERGY_THERMAL_HEATING, FIELD_ENERGY_ELECTRIC_HEATING, FIELD_ENERGY_THERMAL_BOILER,
     FIELD_ENERGY_THERMAL_DHW, FIELD_ENERGY_THERMAL_COOLING, FIELD_ENERGY_ELECTRIC_DHW, FIELD_DHW_GAS_METER,
     FIELD_XTORE_HOT_TEMP, FIELD_DHW_COLD_TEMP, FIELD_DHW_PREHEAT_TEMP, FIELD_DHW_FLOW_RATE,
     FIELD_DHW_PUMP_SPEED, FIELD_DHW_POWER_THERMAL,
     FIELD_MODULATION,
     FIELD_SYSTEM_STATUS, FIELD_HEATPUMP_MODE, FIELD_BURNER_STATUS, FIELD_PUMP_SPEED,
-    FIELD_ERROR_CODE, FIELD_NOTIFICATION_CODE, FIELD_HEATING_HOURS, FIELD_COOLING_HOURS, FIELD_DHW_HOURS, FIELD_DHW_STARTS, FIELD_SOFTWARE_VERSION,
+    FIELD_ERROR_CODE, FIELD_NOTIFICATION_CODE,
+    FIELD_HEATING_HOURS, FIELD_COOLING_HOURS, FIELD_DHW_HOURS, FIELD_DHW_STARTS,
+    FIELD_HP_POWERON_HOURS, FIELD_HP_POWER_CYCLES, FIELD_HP_COMPRESSOR_STARTS, FIELD_HP_DEFROST_CYCLES,
+    FIELD_BOILER_CH_HOURS, FIELD_BOILER_DHW_HOURS, FIELD_BOILER_STARTS, FIELD_BOILER_FLAME_LOSS, FIELD_BOILER_IGNITION_FAILS,
+    FIELD_SOFTWARE_VERSION,
 ])
 
 # System status enum values (FIELD_SYSTEM_STATUS = "77dd")
