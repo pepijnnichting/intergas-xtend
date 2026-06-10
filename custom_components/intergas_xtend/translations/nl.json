@@ -44,7 +44,7 @@
           "scan_interval": "Polling-interval (seconden)"
         },
         "data_description": {
-          "scan_interval": "Hoe vaak de Xtend wordt uitgevraagd (30–300 s). Houd dit op maximaal 300 s, anders verbreekt het Xtend-toegangspunt de verbinding door inactiviteit."
+          "scan_interval": "Hoe vaak de Xtend wordt uitgevraagd (5-300 s). Sneller pollen geeft sneller verse data, maar belast het Xtend-toegangspunt zwaarder. Houd dit op maximaal 300 s, anders verbreekt het Xtend-toegangspunt de verbinding door inactiviteit."
         }
       }
     }

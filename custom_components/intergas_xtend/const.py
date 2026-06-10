@@ -8,7 +8,10 @@ MANUFACTURER = "Intergas"
 DEFAULT_HOST = "10.20.30.1"
 DEFAULT_PORT = 80
 DEFAULT_TIMEOUT = 10  # seconds
-# Keep ≤300 s — the Xtend AP disconnects on inactivity
+# Keep <=300 s - the Xtend AP disconnects on inactivity.
+# 5 s polling is supported for users who want near-real-time updates.
+MIN_SCAN_INTERVAL = 5
+MAX_SCAN_INTERVAL = 300
 DEFAULT_SCAN_INTERVAL = 120  # seconds
 
 # Config flow keys

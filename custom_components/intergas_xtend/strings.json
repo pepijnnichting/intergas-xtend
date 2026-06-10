@@ -44,7 +44,7 @@
           "scan_interval": "Scan interval (seconds)"
         },
         "data_description": {
-          "scan_interval": "How often to poll the Xtend (30–300 s). Keep at 300 or less or the Xtend access point may disconnect due to inactivity."
+          "scan_interval": "How often to poll the Xtend (5-300 s). Faster polling gives quicker updates but adds load to the Xtend access point. Keep at 300 or less or the Xtend access point may disconnect due to inactivity."
         }
       }
     }
