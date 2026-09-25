@@ -34,12 +34,20 @@ def is_valid_ip(address):
     except ValueError:
         return False
 
-STEP_USER_DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
-        vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
-    }
-)
+
+def host_port_schema(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT) -> vol.Schema:
+    """Return the schema shared by setup and reconfiguration forms."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_HOST, default=host): str,
+            vol.Required(CONF_PORT, default=port): vol.All(
+                vol.Coerce(int), vol.Range(min=1, max=65535)
+            ),
+        }
+    )
+
+
+STEP_USER_DATA_SCHEMA = host_port_schema()
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
@@ -107,17 +115,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_HOST,
-                        default=reconfigure_entry.data.get(CONF_HOST, DEFAULT_HOST),
-                    ): str,
-                    vol.Required(
-                        CONF_PORT,
-                        default=reconfigure_entry.data.get(CONF_PORT, DEFAULT_PORT),
-                    ): int,
-                }
+            data_schema=host_port_schema(
+                reconfigure_entry.data.get(CONF_HOST, DEFAULT_HOST),
+                reconfigure_entry.data.get(CONF_PORT, DEFAULT_PORT),
             ),
             errors=errors,
         )

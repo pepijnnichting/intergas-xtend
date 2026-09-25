@@ -29,8 +29,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import IntergasXtendConfigEntry
 
 from .const import (
-    DOMAIN,
-    MANUFACTURER,
     XTEND_UNAVAILABLE,
     FIELD_ROOM_TEMP,
     FIELD_OUTDOOR_TEMP,
@@ -94,6 +92,7 @@ from .const import (
     FIELD_BOILER_IGNITION_FAILS,
     FIELD_SOFTWARE_VERSION,
 )
+from .entity import device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -829,12 +828,7 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self._entry_id)},
-            name="Intergas Xtend",
-            manufacturer=MANUFACTURER,
-            model="Xtend",
-        )
+        return device_info(self._entry_id)
 
     @property
     def native_value(self):
@@ -845,5 +839,3 @@ class IntergasXtendSensor(CoordinatorEntity, SensorEntity):
         if value_fn is not None:
             return value_fn(self.coordinator.data)
         return None
-
-

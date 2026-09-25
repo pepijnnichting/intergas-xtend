@@ -80,6 +80,26 @@ async def test_get_data_missing_stats_key():
     assert result == {}
 
 
+async def test_get_data_invalid_json():
+    """Malformed JSON is converted to a recoverable connection error."""
+    session = _make_session(json_data={"stats": {}})
+    response = await session.get.return_value.__aenter__()
+    response.json = AsyncMock(side_effect=ValueError("malformed JSON"))
+
+    api = IntergasXtendApi("10.20.30.1", 80, session=session)
+    with pytest.raises(ConnectionFailedError, match="invalid JSON"):
+        await api.get_data()
+
+
+async def test_get_data_invalid_stats_shape():
+    """A non-dictionary stats payload is rejected."""
+    session = _make_session(json_data={"stats": []})
+
+    api = IntergasXtendApi("10.20.30.1", 80, session=session)
+    with pytest.raises(ConnectionFailedError, match="invalid statistics"):
+        await api.get_data()
+
+
 # ---------------------------------------------------------------------------
 # login
 # ---------------------------------------------------------------------------
@@ -149,3 +169,10 @@ def test_init_uses_injected_session():
     api = IntergasXtendApi("10.20.30.1", 80, session=mock_session)
     assert api._own_session is False
     assert api.session is mock_session
+
+
+def test_init_formats_ipv6_url():
+    """Constructor brackets an IPv6 host when composing the API URL."""
+    api = IntergasXtendApi("fd00::1", 8080, session=MagicMock())
+
+    assert api._stats_url == "http://[fd00::1]:8080/api/stats/values"

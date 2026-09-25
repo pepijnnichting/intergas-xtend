@@ -2,6 +2,7 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import InvalidData
@@ -15,9 +16,21 @@ from custom_components.intergas_xtend.const import (
     DOMAIN,
     MIN_SCAN_INTERVAL,
 )
+from custom_components.intergas_xtend.config_flow import host_port_schema
 from custom_components.intergas_xtend.intergas_api import ConnectionFailedError
 
 VALID_INPUT = {CONF_HOST: "10.20.30.1", CONF_PORT: 80}
+
+
+def test_host_port_schema_validates_port_range() -> None:
+    """Host/port form schema accepts only valid TCP ports."""
+    schema = host_port_schema()
+
+    assert schema({CONF_HOST: "10.20.30.1", CONF_PORT: "8080"})[CONF_PORT] == 8080
+    with pytest.raises(vol.Invalid):
+        schema({CONF_HOST: "10.20.30.1", CONF_PORT: 0})
+    with pytest.raises(vol.Invalid):
+        schema({CONF_HOST: "10.20.30.1", CONF_PORT: 65536})
 
 
 @pytest.fixture(autouse=True)
@@ -318,4 +331,3 @@ async def test_reconfigure_cannot_connect(hass: HomeAssistant, mock_api_login) -
 
     assert result["type"] == FlowResultType.FORM
     assert result["errors"] == {"base": "cannot_connect"}
-

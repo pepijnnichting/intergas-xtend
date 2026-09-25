@@ -15,8 +15,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import IntergasXtendConfigEntry
 
 from .const import (
-    DOMAIN,
-    MANUFACTURER,
     FIELD_SYSTEM_STATUS,
     FIELD_ROOM_TEMP,
     FIELD_SETPOINT,
@@ -24,6 +22,7 @@ from .const import (
     SYSTEM_STATUS_COOLING,
     XTEND_UNAVAILABLE,
 )
+from .entity import device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,12 +55,7 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self._entry_id)},
-            name="Intergas Xtend",
-            manufacturer=MANUFACTURER,
-            model="Xtend",
-        )
+        return device_info(self._entry_id)
 
     @property
     def current_temperature(self) -> float | None:
@@ -103,4 +97,3 @@ class IntergasXtendThermostat(CoordinatorEntity, ClimateEntity):
         if status in SYSTEM_STATUS_COOLING:
             return HVACAction.COOLING
         return HVACAction.IDLE
-

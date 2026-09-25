@@ -16,8 +16,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import IntergasXtendConfigEntry
 
 from .const import (
-    DOMAIN,
-    MANUFACTURER,
     FIELD_BURNER_STATUS,
     FIELD_SYSTEM_STATUS,
     FIELD_PUMP_SPEED,
@@ -26,6 +24,7 @@ from .const import (
     SYSTEM_STATUS_TAPWATER,
     HEATPUMP_MODE_OFF,
 )
+from .entity import device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -106,12 +105,7 @@ class IntergasXtendBinarySensor(CoordinatorEntity, BinarySensorEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self._entry_id)},
-            name="Intergas Xtend",
-            manufacturer=MANUFACTURER,
-            model="Xtend",
-        )
+        return device_info(self._entry_id)
 
     @property
     def is_on(self):
@@ -122,4 +116,3 @@ class IntergasXtendBinarySensor(CoordinatorEntity, BinarySensorEntity):
         if is_on_fn is not None:
             return is_on_fn(self.coordinator.data)
         return None
-

@@ -1,6 +1,8 @@
 """API client for Intergas Xtend."""
-import aiohttp
 import logging
+from collections.abc import Mapping
+
+import aiohttp
 
 from .const import DEFAULT_TIMEOUT, ALL_FIELDS
 
@@ -8,22 +10,29 @@ _LOGGER = logging.getLogger(__name__)
 
 class IntergasXtendError(Exception):
     """General Intergas Xtend exception."""
-    pass
+
 
 class ConnectionFailedError(IntergasXtendError):
     """Exception when connection fails."""
-    pass
+
 
 class IntergasXtendApi:
     """API Client for Intergas Xtend."""
 
-    def __init__(self, host: str, port: int = 80, session: aiohttp.ClientSession | None = None):
+    def __init__(
+        self,
+        host: str,
+        port: int = 80,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
         """Initialize the API client."""
         self.host = host
         self.port = port
         self._own_session = session is None
         self.session = session if session is not None else aiohttp.ClientSession()
-        self._stats_url = f"http://{host}:{port}/api/stats/values"
+        # Square brackets are required around an IPv6 literal in a URL.
+        url_host = f"[{host}]" if ":" in host else host
+        self._stats_url = f"http://{url_host}:{port}/api/stats/values"
         self._timeout = aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
 
     async def login(self) -> bool:
@@ -60,19 +69,30 @@ class IntergasXtendApi:
                         f"Failed to get data: HTTP {response.status}"
                     )
                 payload = await response.json(content_type=None)
-                stats: dict[str, int] = payload.get("stats", {})
-                return stats
-        except TimeoutError:
+        except TimeoutError as ex:
             raise ConnectionFailedError(
                 f"Connection to {self._stats_url} timed out"
-            )
+            ) from ex
         except aiohttp.ClientError as ex:
             raise ConnectionFailedError(
                 f"Error communicating with Intergas Xtend: {ex}"
-            )
+            ) from ex
+        except ValueError as ex:
+            raise ConnectionFailedError("Intergas Xtend returned invalid JSON") from ex
+
+        if not isinstance(payload, Mapping):
+            raise ConnectionFailedError("Intergas Xtend returned an invalid response")
+
+        stats = payload.get("stats", {})
+        if not isinstance(stats, Mapping) or not all(
+            isinstance(key, str) and isinstance(value, int)
+            for key, value in stats.items()
+        ):
+            raise ConnectionFailedError("Intergas Xtend returned invalid statistics")
+
+        return dict(stats)
 
     async def close(self) -> None:
         """Close the session if we own it."""
         if self._own_session and self.session:
             await self.session.close()
-
